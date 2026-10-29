@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1010" viewBox="0 0 1440 1010" role="img" aria-labelledby="title desc">
-<title id="title">GR-Scheduler：原生调度 + 会话内流水</title>
-<desc id="desc">B 是逻辑请求数，W 是每条请求的 Beam 行数，Q 是同一 owner 的在途阶段数。</desc>
+<title id="title">GR-Scheduler：请求驻留与阶段流水</title>
+<desc id="desc">B 是逻辑请求数，W 是每条请求的 Beam 行数，Q 是同一会话的在途阶段数。</desc>
 <style>text{font-family:"Noto Sans CJK SC","Noto Sans CJK JP","Microsoft YaHei",sans-serif}</style>
 <rect x="0" y="0" width="1440" height="1010" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.5"/>
-<text x="40" y="62.0" fill="#24364B" font-size="34" font-weight="700" text-anchor="start">GR-Scheduler：原生调度 + 会话内流水</text>
-<text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">B 是逻辑请求数，W 是每条请求的 Beam 行数，Q 是同一 owner 的在途阶段数。</text>
+<text x="40" y="62.0" fill="#24364B" font-size="34" font-weight="700" text-anchor="start">GR-Scheduler：请求驻留与阶段流水</text>
+<text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">B 是逻辑请求数，W 是每条请求的 Beam 行数，Q 是同一会话的在途阶段数。</text>
 <rect x="40" y="135" width="1360" height="130" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
-<text x="60" y="178.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">前端：一次提交固定成员会话</text>
-<text x="60" y="219.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">BeamBatchRequest  →  [prompt 0, prompt 1, …, prompt B−1]     成员与有效生成预算在执行前固定</text>
+<text x="60" y="178.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">前端：一次提交完整搜索任务</text>
+<text x="60" y="219.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">HTTP / 离线调用  →  [prompt 0, prompt 1, …, prompt B−1]     批次成员与生成预算在执行前固定</text>
 <polyline points="720,265 720,300" fill="none" stroke="#60768D" stroke-width="2"/>
 <polygon points="720.0,300.0 714.5,289.4 725.5,289.4" fill="#60768D"/>
 <rect x="40" y="315" width="350" height="165" rx="12" fill="#EEF2F6" stroke="#8AB8D5" stroke-width="1.5"/>
@@ -17,14 +17,14 @@
 <polyline points="390,395 445,395" fill="none" stroke="#60768D" stroke-width="2"/>
 <polygon points="445.0,395.0 434.4,400.5 434.4,389.5" fill="#60768D"/>
 <rect x="460" y="315" width="940" height="165" rx="12" fill="#FFF6D6" stroke="#DFBF65" stroke-width="1.5"/>
-<text x="480" y="358.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">EngineCore：唯一执行 owner = S1</text>
-<text x="480" y="399.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">原生 Request / token 进度 / KV block 记账</text>
+<text x="480" y="358.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">EngineCore：当前执行会话 S1</text>
+<text x="480" y="399.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">原生请求管理 / token 进度 / KV block 记账</text>
 <text x="480" y="432.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">B=4、W=128：Decode 记账 4 个逻辑 token，执行 512 行</text>
 <polyline points="930,480 930,520" fill="none" stroke="#60768D" stroke-width="2"/>
 <polygon points="930.0,520.0 924.5,509.4 935.5,509.4" fill="#60768D"/>
 <text x="45" y="573.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">原生 Executor</text>
-<text x="45" y="612.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">BatchQueue / Futures</text>
-<text x="45" y="645.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">Q=2，不是两个 owner</text>
+<text x="45" y="612.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">异步执行队列</text>
+<text x="45" y="645.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">Q=2，同一会话阶段流水</text>
 <rect x="460" y="535" width="445" height="115" rx="12" fill="#F8DDE4" stroke="#D493A5" stroke-width="1.5"/>
 <text x="480" y="578.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">槽 0：阶段 k</text>
 <text x="480" y="619.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">已提交，等待消费回执</text>
@@ -36,7 +36,7 @@
 <polyline points="1178,650 1178,696" fill="none" stroke="#60768D" stroke-width="2"/>
 <polygon points="1178.0,696.0 1172.5,685.4 1183.5,685.4" fill="#60768D"/>
 <rect x="40" y="710" width="1360" height="210" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
-<text x="65" y="755.0" fill="#24364B" font-size="27" font-weight="700" text-anchor="start">Worker / 设备：持久状态由 owner 独占，阶段之间复用</text>
+<text x="65" y="755.0" fill="#24364B" font-size="27" font-weight="700" text-anchor="start">Worker / 设备：会话独占持久状态，阶段之间复用</text>
 <rect x="65" y="783" width="410" height="110" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
 <text x="85" y="826.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">模型 Forward / Graph</text>
 <text x="85" y="867.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">固定地址输入与 attention metadata</text>
@@ -44,7 +44,7 @@
 <text x="520" y="826.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">Beam 状态与私有 suffix KV</text>
 <text x="520" y="867.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">token / score / parent 留在设备</text>
 <rect x="935" y="783" width="440" height="110" rx="12" fill="#E0F2EA" stroke="#77B79E" stroke-width="1.5"/>
-<text x="955" y="826.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">完成与资源释放证明</text>
-<text x="955" y="867.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">终态确认后交付，再接纳下一 owner</text>
-<text x="40" y="966.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">来源：decode_graph 2a598ff · GRExecutionCapacity / gr_async_scheduler.py；逻辑职责图，不表示独立进程数。</text>
+<text x="955" y="826.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">完成与资源释放确认</text>
+<text x="955" y="867.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">终态确认后交付，再接纳下一会话</text>
+<text x="40" y="966.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">逻辑职责示意：前端统一提交，设备保留中间候选，调度层负责阶段推进和资源交接。</text>
 </svg>

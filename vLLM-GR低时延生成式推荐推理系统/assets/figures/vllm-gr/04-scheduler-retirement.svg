@@ -7,7 +7,7 @@
 <text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">业务状态与资源状态分开维护；成功、取消和失败都遵守相同的资源交接边界。</text>
 <rect x="40" y="205" width="220" height="115" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
 <text x="60" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">WAITING</text>
-<text x="60" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">等待 owner</text>
+<text x="60" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">等待执行机会</text>
 <rect x="315" y="205" width="220" height="115" rx="12" fill="#FFF6D6" stroke="#8AB8D5" stroke-width="1.5"/>
 <text x="335" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">RUNNING</text>
 <text x="335" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">持有执行资源</text>
@@ -39,8 +39,8 @@
 <polygon points="1360.0,262.0 1370.6,256.5 1370.6,267.5" fill="#60768D"/>
 <text x="185" y="471.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">等待中取消且没有 Worker 资源：直接释放</text>
 <rect x="40" y="550" width="1360" height="170" rx="12" fill="#F8DDE4" stroke="#D493A5" stroke-width="1.5"/>
-<text x="65" y="595.0" fill="#24364B" font-size="27" font-weight="700" text-anchor="start">回收身份必须匹配：session_id + owner_generation + retire_id</text>
-<text x="65" y="640.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="start">旧回执不能释放新 owner；未完成 GPU 工作与 KV 租约不得提前回收。</text>
+<text x="65" y="595.0" fill="#24364B" font-size="27" font-weight="700" text-anchor="start">回收确认关联：会话身份 + 资源代次 + 回收编号</text>
+<text x="65" y="640.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="start">按身份校验迟到回执；GPU 工作和 KV 租约完成后，再交接资源。</text>
 <text x="65" y="674.5" fill="#24364B" font-size="23" font-weight="400" text-anchor="start">终态在释放确认后至多交付一次；执行中取消不发送迟到成功结果。</text>
-<text x="40" y="766.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">来源：decode_graph 2a598ff · GRResourceStatus / consume_gr_retirement / abort_gr_session</text>
+<text x="40" y="766.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">资源交接贯穿正常完成、取消和失败处理，支持连续请求之间的安全复用。</text>
 </svg>
