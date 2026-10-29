@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="970" viewBox="0 0 1440 970" role="img" aria-labelledby="title desc">
+<title id="title">已有 L20 测量：不同形状下的设备计算构成</title>
+<desc id="desc">GR #530 + #537（145c604）· 28 层、两步 Decode 的 GPU kernel sum · 2026-10-28</desc>
+<style>text{font-family:"Noto Sans CJK SC","Noto Sans CJK JP","Microsoft YaHei",sans-serif}</style>
+<rect x="0" y="0" width="1440" height="970" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="40" y="62.0" fill="#24364B" font-size="34" font-weight="700" text-anchor="start">已有 L20 测量：不同形状下的设备计算构成</text>
+<text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">GR #530 + #537（145c604）· 28 层、两步 Decode 的 GPU kernel sum · 2026-10-28</text>
+<text x="40" y="152.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">模型统计排除 LM-head、Top-k、图外状态准备和 GPU 空隙；每形状有 6 批 profiler 样本。</text>
+<rect x="330" y="183" width="25" height="25" rx="3" fill="#477DA9" stroke="#477DA9" stroke-width="1.5"/>
+<text x="366" y="201.0" fill="#24364B" font-size="21" font-weight="400" text-anchor="start">Attention</text>
+<rect x="590" y="183" width="25" height="25" rx="3" fill="#E4B84C" stroke="#E4B84C" stroke-width="1.5"/>
+<text x="626" y="201.0" fill="#24364B" font-size="21" font-weight="400" text-anchor="start">线性层（含 split-K reduction）</text>
+<rect x="1080" y="183" width="25" height="25" rx="3" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="1.5"/>
+<text x="1116" y="201.0" fill="#24364B" font-size="21" font-weight="400" text-anchor="start">其余模型核</text>
+<text x="300" y="261.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="end">L / B / W</text>
+<text x="1250" y="261.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">模型合计</text>
+<text x="300" y="324.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">512 / 4 / 256</text>
+<rect x="330" y="290" width="52.69327379291097" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<rect x="382.693273792911" y="290" width="751.1024281328497" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="758.2444878593358" y="323.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">88.4%</text>
+<rect x="1133.7957019257606" y="290" width="46.20429807423947" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="325.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">60.911 ms</text>
+<text x="300" y="402.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">1024 / 4 / 256</text>
+<rect x="330" y="368" width="86.14132573551403" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<text x="373.070662867757" y="401.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="middle">10.1%</text>
+<rect x="416.14132573551404" y="368" width="719.5570387394336" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="775.9198451052308" y="401.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">84.7%</text>
+<rect x="1135.6983644749475" y="368" width="44.30163552505234" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="403.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">63.527 ms</text>
+<text x="300" y="480.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">8192 / 1 / 32</text>
+<rect x="330" y="446" width="504.8779999198686" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<text x="582.4389999599343" y="479.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="middle">59.4%</text>
+<rect x="834.8779999198687" y="446" width="314.94851556552743" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="992.3522577026324" y="479.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">37.1%</text>
+<rect x="1149.8265154853962" y="446" width="30.173484514603953" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="481.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">24.959 ms</text>
+<text x="300" y="558.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">10240 / 1 / 32</text>
+<rect x="330" y="524" width="549.2275625306523" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<text x="604.6137812653262" y="557.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="middle">64.6%</text>
+<rect x="879.2275625306523" y="524" width="274.36068100609543" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="1016.4079030337" y="557.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">32.3%</text>
+<rect x="1153.5882435367478" y="524" width="26.411756463252296" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="559.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">28.546 ms</text>
+<text x="300" y="636.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">10240 / 1 / 256</text>
+<rect x="330" y="602" width="458.12345679012344" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<text x="559.0617283950617" y="635.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="middle">53.9%</text>
+<rect x="788.1234567901234" y="602" width="357.0617283950618" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="966.6543209876543" y="635.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">42.0%</text>
+<rect x="1145.1851851851852" y="602" width="34.81481481481482" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="637.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">34.424 ms</text>
+<text x="300" y="714.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="end">10240 / 4 / 256</text>
+<rect x="330" y="680" width="419.61402915472655" height="53" rx="0" fill="#477DA9" stroke="#477DA9" stroke-width="0"/>
+<text x="539.8070145773632" y="713.0" fill="#FFFFFF" font-size="21" font-weight="700" text-anchor="middle">49.4%</text>
+<rect x="749.6140291547265" y="680" width="404.50002669846754" height="53" rx="0" fill="#E4B84C" stroke="#E4B84C" stroke-width="0"/>
+<text x="951.8640425039603" y="713.0" fill="#24364B" font-size="21" font-weight="700" text-anchor="middle">47.6%</text>
+<rect x="1154.114055853194" y="680" width="25.88594414680598" height="53" rx="0" fill="#B8C5D1" stroke="#B8C5D1" stroke-width="0"/>
+<text x="1250" y="715.0" fill="#24364B" font-size="23" font-weight="700" text-anchor="start">112.366 ms</text>
+<polyline points="330.0,773 330.0,781" fill="none" stroke="#60768D" stroke-width="1"/>
+<text x="330.0" y="810.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">0%</text>
+<polyline points="542.5,773 542.5,781" fill="none" stroke="#60768D" stroke-width="1"/>
+<text x="542.5" y="810.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">25%</text>
+<polyline points="755.0,773 755.0,781" fill="none" stroke="#60768D" stroke-width="1"/>
+<text x="755.0" y="810.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">50%</text>
+<polyline points="967.5,773 967.5,781" fill="none" stroke="#60768D" stroke-width="1"/>
+<text x="967.5" y="810.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">75%</text>
+<polyline points="1180.0,773 1180.0,781" fill="none" stroke="#60768D" stroke-width="1"/>
+<text x="1180.0" y="810.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">100%</text>
+<rect x="40" y="850" width="1360" height="78" rx="12" fill="#FFF6D6" stroke="#DFBF65" stroke-width="1.5"/>
+<text x="64" y="883.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">长上下文、窄 Beam 的 Attention 占比高；短上下文、较大 batch 的线性层成本突出。</text>
+<text x="64" y="915.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">来源：paired/l20_decode_comparison_zh.md；该实验没有开关异步调度，不能据此归因调度收益。</text>
+</svg>

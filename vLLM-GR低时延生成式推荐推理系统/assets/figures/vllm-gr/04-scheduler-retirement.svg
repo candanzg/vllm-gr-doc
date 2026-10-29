@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="790" viewBox="0 0 1440 790" role="img" aria-labelledby="title desc">
+<title id="title">资源生命周期：完成计算之后，还要确认可复用</title>
+<desc id="desc">业务状态与资源状态分开维护；成功、取消和失败都遵守相同的资源交接边界。</desc>
+<style>text{font-family:"Noto Sans CJK SC","Noto Sans CJK JP","Microsoft YaHei",sans-serif}</style>
+<rect x="0" y="0" width="1440" height="790" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="40" y="62.0" fill="#24364B" font-size="34" font-weight="700" text-anchor="start">资源生命周期：完成计算之后，还要确认可复用</text>
+<text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">业务状态与资源状态分开维护；成功、取消和失败都遵守相同的资源交接边界。</text>
+<rect x="40" y="205" width="220" height="115" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
+<text x="60" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">WAITING</text>
+<text x="60" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">等待 owner</text>
+<rect x="315" y="205" width="220" height="115" rx="12" fill="#FFF6D6" stroke="#8AB8D5" stroke-width="1.5"/>
+<text x="335" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">RUNNING</text>
+<text x="335" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">持有执行资源</text>
+<rect x="590" y="205" width="220" height="115" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
+<text x="610" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">DRAINING</text>
+<text x="610" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">停止推进并排空</text>
+<rect x="865" y="205" width="220" height="115" rx="12" fill="#E3F1FB" stroke="#8AB8D5" stroke-width="1.5"/>
+<text x="885" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">RETIRING</text>
+<text x="885" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">独立清理确认中</text>
+<rect x="1140" y="205" width="220" height="115" rx="12" fill="#E0F2EA" stroke="#77B79E" stroke-width="1.5"/>
+<text x="1160" y="248.0" fill="#24364B" font-size="26" font-weight="700" text-anchor="start">CLOSED</text>
+<text x="1160" y="289.0" fill="#24364B" font-size="22" font-weight="400" text-anchor="start">资源已释放</text>
+<polyline points="260,262 307,262" fill="none" stroke="#60768D" stroke-width="2"/>
+<polygon points="307.0,262.0 296.4,267.5 296.4,256.5" fill="#60768D"/>
+<polyline points="535,262 582,262" fill="none" stroke="#60768D" stroke-width="2"/>
+<polygon points="582.0,262.0 571.4,267.5 571.4,256.5" fill="#60768D"/>
+<polyline points="810,262 857,262" fill="none" stroke="#60768D" stroke-width="2"/>
+<polygon points="857.0,262.0 846.4,267.5 846.4,256.5" fill="#60768D"/>
+<polyline points="1085,262 1132,262" fill="none" stroke="#60768D" stroke-width="2"/>
+<polygon points="1132.0,262.0 1121.4,267.5 1121.4,256.5" fill="#60768D"/>
+<text x="100" y="180.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">FIFO 准入</text>
+<text x="477" y="180.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">结束 / 取消 / 失败</text>
+<text x="790" y="180.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">零 token 清理帧</text>
+<text x="1100" y="180.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="start">匹配释放证明</text>
+<polyline points="700,320 700,405 1250,405 1250,320" fill="none" stroke="#357E64" stroke-width="2"/>
+<polygon points="1250.0,320.0 1255.5,330.6 1244.5,330.6" fill="#357E64"/>
+<text x="720" y="376.0" fill="#357E64" font-size="21" font-weight="400" text-anchor="start">末次输出已携带匹配释放证明：省去独立回收</text>
+<polyline points="150,320 150,495 1380,495 1380,262 1360,262" fill="none" stroke="#60768D" stroke-width="2" stroke-dasharray="7 6"/>
+<polygon points="1360.0,262.0 1370.6,256.5 1370.6,267.5" fill="#60768D"/>
+<text x="185" y="471.0" fill="#60768D" font-size="22" font-weight="400" text-anchor="start">等待中取消且没有 Worker 资源：直接释放</text>
+<rect x="40" y="550" width="1360" height="170" rx="12" fill="#F8DDE4" stroke="#D493A5" stroke-width="1.5"/>
+<text x="65" y="595.0" fill="#24364B" font-size="27" font-weight="700" text-anchor="start">回收身份必须匹配：session_id + owner_generation + retire_id</text>
+<text x="65" y="640.0" fill="#24364B" font-size="23" font-weight="400" text-anchor="start">旧回执不能释放新 owner；未完成 GPU 工作与 KV 租约不得提前回收。</text>
+<text x="65" y="674.5" fill="#24364B" font-size="23" font-weight="400" text-anchor="start">终态在释放确认后至多交付一次；执行中取消不发送迟到成功结果。</text>
+<text x="40" y="766.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">来源：decode_graph 2a598ff · GRResourceStatus / consume_gr_retirement / abort_gr_session</text>
+</svg>

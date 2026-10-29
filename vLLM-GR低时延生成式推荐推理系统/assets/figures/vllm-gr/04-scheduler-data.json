@@ -1,0 +1,159 @@
+{
+  "as_of": "2026-10-29",
+  "code": {
+    "decode_graph": "2a598ffa11a25894d7d5968aad58449cdf4f1713",
+    "pr529": "393a610182cf5f5c22ba5163492413adb1f19b1b",
+    "pr529_status": "OPEN; not merged at retrieval"
+  },
+  "historical_scheduling": {
+    "source_url": "https://github.com/JiusiServe/vllm-gr/blob/2a598ffa11a25894d7d5968aad58449cdf4f1713/docs/async_scheduling_validation.md",
+    "source_file_sha256": "57edff81ece16ae149525d16270a641601de9a32d04d8ea271ba4850ea18f592",
+    "historical_base_in_source": "6bca38c",
+    "conditions": {
+      "gpu": "NVIDIA L20",
+      "model": "OneRec-1.7B",
+      "dtype": "BF16",
+      "B": 1,
+      "P": 1024,
+      "W": 128,
+      "generation_budget": "held fixed; exact N not specified in the four-group summary",
+      "independent_runs": 3,
+      "warmups_per_run": 10,
+      "measured_requests_per_run": 100,
+      "decode_graph": "held fixed"
+    },
+    "metric": "Arithmetic mean of three per-run service latency medians, milliseconds; endpoint is Worker retirement proof, not public API E2E or P99.",
+    "limitations": "Historical exact-bucket experiment predates submission cleanup and padded Prefill dispatch. Original raw measurements are not included here. No claim about PR 529 performance.",
+    "rows": [
+      {
+        "mode": "Eager＋串行",
+        "latency_ms": 62.488,
+        "decrease_vs_eager_serial_percent": 0.0
+      },
+      {
+        "mode": "Eager＋异步",
+        "latency_ms": 59.27,
+        "decrease_vs_eager_serial_percent": 5.1498
+      },
+      {
+        "mode": "Graph＋串行",
+        "latency_ms": 62.212,
+        "decrease_vs_eager_serial_percent": 0.4417
+      },
+      {
+        "mode": "Graph＋异步",
+        "latency_ms": 58.598,
+        "decrease_vs_eager_serial_percent": 6.2252
+      }
+    ]
+  },
+  "l20_decode": {
+    "measurement_date": "2026-10-28",
+    "source": "vllm-gr-l20-decode-530-537/results/l20-decode/paired/l20_decode_comparison_zh.md",
+    "source_file_sha256": "3f538b4e1158cea8650775a52e22955f9a04969aba15ca75cd4c1c3c05b5abd8",
+    "analysis_file_sha256": "17abfd073b75a5e430e7287c47e81ec68ac89ffdb6c4063f08814c6bb7f88697",
+    "provenance_file_sha256": "3cebf3f7f7ddc954fc7fd4e09f468929781edb30d961c5b24449cc99f4e9d9e9",
+    "gr_commit": "145c6045a4dd26385c72b7042d55c9abc2701fd9",
+    "gr_parents": [
+      "PR 530: 99a36e6",
+      "PR 537: ad5801f"
+    ],
+    "sid_commit": "97062d97eef53115105063801e35184e36186df5",
+    "conditions": {
+      "gpu": "NVIDIA L20 / SM89 / 92 SM",
+      "model": "OneRec-1.7B",
+      "layers": 28,
+      "dtype": "BF16 weights and KV",
+      "TP": 1,
+      "N": 3,
+      "decode_steps": 2,
+      "beam": "Unconstrained, K=W, ignore EOS stop without masking EOS",
+      "prefix_cache": false,
+      "input": "Synthetic SID history, seed 20261028, paired input hashes identical",
+      "gr_attention": "FA2 prefill and decode",
+      "sid_decode": "SM80 CuTe path",
+      "launch_order": "GR A1, SID B1, SID B2, GR A2",
+      "warmup_batches_per_start": 12,
+      "measured_batches_per_start": 48,
+      "normal_batches_per_case_per_backend": 96,
+      "profile_batches_per_case_per_backend": 6,
+      "torch": "2.11.0+cu130",
+      "transformers": "4.57.6",
+      "cute_dsl": "4.5.2",
+      "quack": "0.5.0"
+    },
+    "kernel_metric": "Sum of GPU kernel durations per batch across 28 layers and two decode steps, milliseconds. Model excludes LM-head, Top-k, graph-external state preparation and GPU idle gaps.",
+    "api_metric": "Separate unprofiled per-batch API mean including prefill, decode, selection, candidate token/text/score materialization and synchronization.",
+    "limitations": "Different KV layouts and the installed SID dependency combination restrict causal attribution. No business Recall, scheduler ablation, online P99 or PR 529 upgrade claim.",
+    "composition_figure": "Components are normalized by their sum; total labels preserve original reported model sums. Differences at 0.001 ms are rounding.",
+    "rows": [
+      {
+        "shape": "L512-B4-W256",
+        "gr_attention_ms": 3.776,
+        "sid_attention_ms": 4.354,
+        "gr_model_ms": 60.911,
+        "sid_model_ms": 61.912,
+        "gr_linear_ms": 53.824,
+        "gr_other_ms": 3.311,
+        "gr_api_mean_ms": 198.12,
+        "sid_api_mean_ms": 196.877
+      },
+      {
+        "shape": "L1024-B4-W256",
+        "gr_attention_ms": 6.438,
+        "sid_attention_ms": 7.363,
+        "gr_model_ms": 63.527,
+        "sid_model_ms": 64.865,
+        "gr_linear_ms": 53.778,
+        "gr_other_ms": 3.311,
+        "gr_api_mean_ms": 266.884,
+        "sid_api_mean_ms": 259.363
+      },
+      {
+        "shape": "L8192-B1-W32",
+        "gr_attention_ms": 14.825,
+        "sid_attention_ms": 5.346,
+        "gr_model_ms": 24.959,
+        "sid_model_ms": 15.884,
+        "gr_linear_ms": 9.248,
+        "gr_other_ms": 0.886,
+        "gr_api_mean_ms": 359.398,
+        "sid_api_mean_ms": 335.015
+      },
+      {
+        "shape": "L10240-B1-W32",
+        "gr_attention_ms": 18.445,
+        "sid_attention_ms": 6.654,
+        "gr_model_ms": 28.546,
+        "sid_model_ms": 17.105,
+        "gr_linear_ms": 9.214,
+        "gr_other_ms": 0.887,
+        "gr_api_mean_ms": 467.95,
+        "sid_api_mean_ms": 439.762
+      },
+      {
+        "shape": "L10240-B1-W256",
+        "gr_attention_ms": 18.554,
+        "sid_attention_ms": 13.4,
+        "gr_model_ms": 34.424,
+        "sid_model_ms": 29.218,
+        "gr_linear_ms": 14.461,
+        "gr_other_ms": 1.41,
+        "gr_api_mean_ms": 487.563,
+        "sid_api_mean_ms": 464.784
+      },
+      {
+        "shape": "L10240-B4-W256",
+        "gr_attention_ms": 55.471,
+        "sid_attention_ms": 61.995,
+        "gr_model_ms": 112.366,
+        "sid_model_ms": 119.537,
+        "gr_linear_ms": 53.473,
+        "gr_other_ms": 3.422,
+        "gr_api_mean_ms": 1901.869,
+        "sid_api_mean_ms": 1859.096
+      }
+    ]
+  },
+  "artifact_scope": "Extracted documentation/figure data only; this is not a replacement for raw per-request JSON or traces. No new inference benchmark was run."
+}

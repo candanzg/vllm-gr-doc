@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="820" viewBox="0 0 1440 820" role="img" aria-labelledby="title desc">
+<title id="title">已有调度消融：Graph + 异步为 58.598 ms</title>
+<desc id="desc">L20 · OneRec-1.7B · BF16 · B=1 / P=1024 / W=128 · 生成预算和 Decode Graph 固定</desc>
+<style>text{font-family:"Noto Sans CJK SC","Noto Sans CJK JP","Microsoft YaHei",sans-serif}</style>
+<rect x="0" y="0" width="1440" height="820" rx="0" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.5"/>
+<text x="40" y="62.0" fill="#24364B" font-size="34" font-weight="700" text-anchor="start">已有调度消融：Graph + 异步为 58.598 ms</text>
+<text x="40" y="104.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">L20 · OneRec-1.7B · BF16 · B=1 / P=1024 / W=128 · 生成预算和 Decode Graph 固定</text>
+<text x="40" y="156.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">每组 3 次独立运行 × 100 个测量请求；每次预热 10 个。统计量：各次服务中位数的均值。</text>
+<polyline points="330,200 330,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="330" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">0</text>
+<polyline points="450,200 450,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="450" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">10</text>
+<polyline points="570,200 570,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="570" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">20</text>
+<polyline points="690,200 690,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="690" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">30</text>
+<polyline points="810,200 810,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="810" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">40</text>
+<polyline points="930,200 930,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="930" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">50</text>
+<polyline points="1050,200 1050,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="1050" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">60</text>
+<polyline points="1170,200 1170,624" fill="none" stroke="#DDE5EC" stroke-width="1"/>
+<text x="1170" y="659.0" fill="#60768D" font-size="20" font-weight="400" text-anchor="middle">70</text>
+<text x="300" y="251.0" fill="#24364B" font-size="25" font-weight="400" text-anchor="end">Eager＋串行</text>
+<rect x="330" y="216" width="749.856" height="56" rx="4" fill="#A0B1C0" stroke="#A0B1C0" stroke-width="1.5"/>
+<text x="1093.856" y="244.0" fill="#24364B" font-size="25" font-weight="700" text-anchor="start">62.488 ms</text>
+<text x="1093.856" y="272.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">基准</text>
+<text x="300" y="351.0" fill="#24364B" font-size="25" font-weight="400" text-anchor="end">Eager＋异步</text>
+<rect x="330" y="316" width="711.24" height="56" rx="4" fill="#6BA7CF" stroke="#6BA7CF" stroke-width="1.5"/>
+<text x="1055.24" y="344.0" fill="#24364B" font-size="25" font-weight="700" text-anchor="start">59.270 ms</text>
+<text x="1055.24" y="372.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">下降 5.15%</text>
+<text x="300" y="451.0" fill="#24364B" font-size="25" font-weight="400" text-anchor="end">Graph＋串行</text>
+<rect x="330" y="416" width="746.5440000000001" height="56" rx="4" fill="#477DA9" stroke="#477DA9" stroke-width="1.5"/>
+<text x="1090.544" y="444.0" fill="#24364B" font-size="25" font-weight="700" text-anchor="start">62.212 ms</text>
+<text x="1090.544" y="472.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">下降 0.44%</text>
+<text x="300" y="551.0" fill="#24364B" font-size="25" font-weight="700" text-anchor="end">Graph＋异步</text>
+<rect x="330" y="516" width="703.1759999999999" height="56" rx="4" fill="#3F997A" stroke="#3F997A" stroke-width="1.5"/>
+<text x="1047.176" y="544.0" fill="#24364B" font-size="25" font-weight="700" text-anchor="start">58.598 ms</text>
+<text x="1047.176" y="572.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">下降 6.23%</text>
+<text x="1218" y="658.0" fill="#60768D" font-size="21" font-weight="400" text-anchor="start">服务时延（ms）</text>
+<rect x="40" y="695" width="1360" height="78" rx="12" fill="#FFF6D6" stroke="#DFBF65" stroke-width="1.5"/>
+<text x="62" y="727.0" fill="#24364B" font-size="20" font-weight="400" text-anchor="start">历史 exact-bucket 实验；终点是 Worker 释放证明。不是公共 API E2E、P99，也不是 PR #529 升级成绩。</text>
+<text x="62" y="758.0" fill="#60768D" font-size="19" font-weight="400" text-anchor="start">来源：docs/async_scheduling_validation.md（2a598ff 保留的历史记录）；横轴从 0 开始。</text>
+</svg>
