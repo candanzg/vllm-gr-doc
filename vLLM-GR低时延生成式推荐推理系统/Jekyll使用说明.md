@@ -8,24 +8,31 @@
 
 ```text
 vLLM-GR低时延生成式推荐推理系统/
+├── Gemfile
 ├── _config.yml
 ├── _includes/
 │   └── vllm-gr/
-│       ├── 01-背景与挑战.md
-│       ├── 02-低时延生成式推荐推理系统vLLM-GR.md
-│       ├── 03-低时延推理引起GR-Engin.md
-│       ├── 04-调度与并发优化GR-Scheduler.md
-│       ├── 05-池化加速GR-Cache.md
-│       ├── 06-竞品性能分析.md
-│       └── 07-总结与展望.md
+│       ├── 01-background-and-challenges.md
+│       ├── 02-system-overview.md
+│       ├── 03-gr-engine.md
+│       ├── 04-gr-scheduler.md
+│       ├── 05-gr-cache.md
+│       ├── 06-competitive-analysis.md
+│       └── 07-summary-and-outlook.md
 ├── _posts/
 │   └── 2026-10-27-vllm-gr.md
 ├── assets/
+├── performance_data/
 └── Jekyll使用说明.md
 ```
 
 `_includes/vllm-gr/` 下的文件是分章节编辑文件。  
 `_posts/2026-10-27-vllm-gr.md` 是文章入口文件，负责定义文章信息和章节顺序。
+
+> **文件名必须使用 ASCII 字符。** Jekyll 4.4 的 `include` 标签会校验文件名，
+> 中文（或其他非 ASCII）路径会直接报错
+> `Invalid syntax for include tag. File contains invalid characters or sequences`。
+> 因此章节文件统一用英文短名，中文章节标题只写在文件正文的 `#` 标题里。
 
 Jekyll 构建时，会按照入口文件中的 Liquid `include` 指令，把章节组合成一篇完整网页。
 
@@ -36,41 +43,43 @@ Jekyll 构建时，会按照入口文件中的 Liquid `include` 指令，把章�
 ```bash
 sudo apt-get update
 sudo apt-get install -y ruby-full build-essential
-gem install --user-install bundler jekyll
-```
 
-如果系统找不到 `bundle` 或 `jekyll`，执行：
-
-```bash
-GEM_BIN="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin"
-export PATH="$GEM_BIN:$PATH"
+# 安装 Jekyll 及其依赖（gem 默认装到系统目录，需要 root）
+gem install 'jekyll:~>4.4' 'minima:~>2.5' webrick --no-document
 ```
 
 检查版本：
 
 ```bash
-ruby --version
-bundle --version
-jekyll --version
+ruby --version      # 需要 2.7 以上，本项目使用 3.2
+jekyll --version    # 需要 4.x
 ```
 
-如果项目中没有 `Gemfile`，可以在根目录创建：
+Ubuntu/Debian 用 apt 安装的 Ruby 只提供带版本号的可执行文件（`bundle3.2`、
+`bundler3.2`），没有 `bundle` 这个短名。如果 `bundle --version` 报 command not found，
+就直接用带版本号的命令，下文出现的 `bundle` 都按这个规则替换：
+
+```bash
+bundle3.2 --version
+```
+
+本项目根目录已经带有 `Gemfile`：
 
 ```ruby
 source "https://rubygems.org"
 
-gem "jekyll", "~> 4.3"
+gem "jekyll", "~> 4.4"
 gem "minima", "~> 2.5"
-gem "webrick"
+gem "webrick", "~> 1.9"
 ```
 
-然后安装依赖：
+首次进入项目时安装依赖：
 
 ```bash
 bundle install
 ```
 
-如果使用 vLLM 官方博客仓库，应优先使用仓库已有的 `Gemfile`。
+`Gemfile.lock` 需要一起提交，保证每个人构建出的页面一致。
 
 ## 3. 进入项目目录
 
@@ -108,13 +117,13 @@ _posts/2026-10-27-vllm-gr.md
 文章顺序由入口文件中的 `include` 顺序控制：
 
 ```liquid
-{% include vllm-gr/01-背景与挑战.md %}
-{% include vllm-gr/02-低时延生成式推荐推理系统vLLM-GR.md %}
-{% include vllm-gr/03-低时延推理引起GR-Engin.md %}
-{% include vllm-gr/04-调度与并发优化GR-Scheduler.md %}
-{% include vllm-gr/05-池化加速GR-Cache.md %}
-{% include vllm-gr/06-竞品性能分析.md %}
-{% include vllm-gr/07-总结与展望.md %}
+{% include vllm-gr/01-background-and-challenges.md %}
+{% include vllm-gr/02-system-overview.md %}
+{% include vllm-gr/03-gr-engine.md %}
+{% include vllm-gr/04-gr-scheduler.md %}
+{% include vllm-gr/05-gr-cache.md %}
+{% include vllm-gr/06-competitive-analysis.md %}
+{% include vllm-gr/07-summary-and-outlook.md %}
 ```
 
 Linux 文件名区分大小写，`include` 中的路径必须和实际文件名完全一致。
@@ -221,13 +230,13 @@ git switch -c docs/gr-chapter-03
 
 ```bash
 git status --short
-git diff -- "_includes/vllm-gr/03-低时延推理引起GR-Engin.md"
+git diff -- "_includes/vllm-gr/03-gr-engine.md"
 ```
 
 构建通过后提交：
 
 ```bash
-git add "_includes/vllm-gr/03-低时延推理引起GR-Engin.md"
+git add "_includes/vllm-gr/03-gr-engine.md"
 git commit -m "docs: update GR engine chapter"
 git push -u origin docs/gr-chapter-03
 ```
