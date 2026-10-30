@@ -91,13 +91,13 @@ SilverTorch 的方向与本文主题高度相关：**推荐系统的瓶颈正在
 
 **候选必须合法。** 并非任意三个 token 都能组成目录中的物品。`(a₁,b₂,c₉)` 若没有对应条目就必须在搜索中排除。合法性判断、模型评分、业务映射是三个相互关联又不可混淆的环节。
 
-![从用户历史到候选物品的两种路径](/assets/figures/vllm-gr/01-retrieval-to-sid.png)
+![从用户历史到候选物品的两种路径](./assets/figures/vllm-gr/01-retrieval-to-sid.png)
 
 *图 1：向量检索与 SID 生成的概念对照。图中 SID 为教学标识，图形大小不表示成本。*
 
 三个特征叠加起来，就是一句概括：**长上下文 + 短解码 + 大 Beam**。这正是通用 LLM 推理框架最不适配的组合——它们优化的是"多用户请求、动态批处理、长解码、OpenAI 风格 API"。
 
-![vLLM 复用职责与 GR 扩展职责](/assets/figures/vllm-gr/01-vllm-gr-boundary.png)
+![vLLM 复用职责与 GR 扩展职责](./assets/figures/vllm-gr/01-vllm-gr-boundary.png)
 
 *图 2：上层为复用的 vLLM 职责，下层为对应的 GR 扩展。这是逻辑职责图，不是固定部署进程图。*
 
@@ -165,7 +165,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 **其三，选择发生在同一个 item 内部。** B 个逻辑请求展开为 B×W 个物理执行行，但候选只在各自 item 内竞争；第二个用户不会因为第一个用户分数更高而丢失全部 Beam。父索引也在各 item 内解释。
 
-![从提交到终态回收的请求时序](/assets/figures/vllm-gr/03-request-lifecycle.png)
+![从提交到终态回收的请求时序](./assets/figures/vllm-gr/03-request-lifecycle.png)
 
 *图 3：同一会话中的 Prefill、两次 Decode 与终态回收。阶段回执是控制信息；正常最后阶段可以合并终态候选与释放证明。图中责任主体是逻辑角色，实际进程部署由 Executor 等配置决定。*
 
@@ -183,7 +183,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 系统可以按"复用 / 接入 / 新增"三类职责理解。这个划分很重要：它解释了哪些行为可以按 vLLM 的文档来理解，哪些必须查 GR 自己的契约。
 
-![vLLM-GR 运行时分层架构：上游复用、接入改造与新增机制](/assets/figures/vllm-gr/03-runtime-architecture.png)
+![vLLM-GR 运行时分层架构：上游复用、接入改造与新增机制](./assets/figures/vllm-gr/03-runtime-architecture.png)
 
 *图 4：从 EntryPoints、Engine 到 Model / Ops 的逻辑职责图。蓝色表示复用 vLLM，黄色表示在上游职责处接入，粉色表示 GR 新增机制。顶部 plugin 在启动时安装扩展；图中分组不代表独立进程，也不要求存在同名 Python 类。*
 
@@ -212,7 +212,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 - **Worker Beam 决策**：候选展开、累计分数选择、父索引重排。
 - **私有后缀 KV 与 Attention 合并**：共享 prompt 走原生分页 KV，分叉后的短历史进 GR 自己的池。
 
-![共享 prompt 与私有 suffix 的 Attention](/assets/figures/vllm-gr/02-prefix-suffix-kv.png)
+![共享 prompt 与私有 suffix 的 Attention](./assets/figures/vllm-gr/02-prefix-suffix-kv.png)
 
 *图 5：同一个 item 的多条查询读取一份分页 prompt 和各自的短 suffix，分别计算 Attention 后用 LSE 合并。箭头表示读取与计算依赖，区域大小不表示内存比例。*
 
@@ -425,12 +425,12 @@ beam:
 
 <!-- Markdown 预览采用首组相对链接；Jekyll 经 Liquid 处理后只保留带 baseurl 的第二组。 -->
 
-[gr04-ownership]: ../../assets/figures/vllm-gr/04-scheduler-ownership.svg
-[gr04-overlap]: ../../assets/figures/vllm-gr/04-scheduler-overlap.svg
-[gr04-retirement]: ../../assets/figures/vllm-gr/04-scheduler-retirement.svg
-[gr04-ablation]: ../../assets/figures/vllm-gr/04-scheduler-ablation.svg
-[gr04-device-cost]: ../../assets/figures/vllm-gr/04-scheduler-device-cost.svg
-[gr04-data]: ../../assets/figures/vllm-gr/04-scheduler-data.json
+[gr04-ownership]: ./assets/figures/vllm-gr/04-scheduler-ownership.svg
+[gr04-overlap]: ./assets/figures/vllm-gr/04-scheduler-overlap.svg
+[gr04-retirement]: ./assets/figures/vllm-gr/04-scheduler-retirement.svg
+[gr04-ablation]: ./assets/figures/vllm-gr/04-scheduler-ablation.svg
+[gr04-device-cost]: ./assets/figures/vllm-gr/04-scheduler-device-cost.svg
+[gr04-data]: ./assets/figures/vllm-gr/04-scheduler-data.json
 
 
 ## 5 池化加速GR-Cache
@@ -455,7 +455,7 @@ GPU 、 NPU
 
 vLLM-GR 围绕这一特点，在 vLLM 基础上构建了会话式 Beam Search 推理路径。一次搜索从提交到返回始终由引擎统一管理，中间候选及其状态在 Worker 和设备侧持续维护。下图以生成三个有效 token 为例，展示一次搜索的主要过程。
 
-![vLLM-GR 当前推理链路与关键机制](/assets/figures/vllm-gr/07-current-capabilities.png)
+![vLLM-GR 当前推理链路与关键机制](./assets/figures/vllm-gr/07-current-capabilities.png)
 
 *图 6：一次 SID 候选搜索的逻辑流程。Prefill 选出第一个有效 token，随后执行两次 Decode；图中箭头表示逻辑数据流，不代表端到端整图。*
 
@@ -471,7 +471,7 @@ vLLM-GR 围绕这一特点，在 vLLM 基础上构建了会话式 Beam Search �
 
 当前 vLLM-GR 聚焦特定形态的生成式推荐推理。随着推荐模型参数规模增长、用户历史变长，以及在线业务对时延和吞吐提出更高要求，系统需要在模型规模、搜索空间和服务能力上持续演进。
 
-![vLLM-GR 未来探索方向](/assets/figures/vllm-gr/07-future-directions.png)
+![vLLM-GR 未来探索方向](./assets/figures/vllm-gr/07-future-directions.png)
 
 *图 7：vLLM-GR 未来探索方向。各方向可以并行研究，具体优先级和时间安排以项目规划为准。*
 
