@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="850" viewBox="0 0 940 850" font-family="'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','PingFang SC','Microsoft YaHei',sans-serif" role="img">
+  <title>显存扫描：GR 预分配随 W 线性增长，与输入长度无关</title>
+<rect width="940" height="850" fill="#ffffff"/>
+<text x="20" y="40" font-size="22" font-weight="700" fill="#1F2D3D">显存扫描：GR 预分配随 W 线性增长，与输入长度无关</text>
+<text x="20" y="68" font-size="12.5" fill="#5A6B7B">L20 实测，OneRec-1.7B，N=3，max_batch=8。每组配置单独启动引擎，跑一次请求后读取 Worker 上的张量与调度器块池。共 9 组。</text>
+<text x="20" y="106" font-size="15" font-weight="700" fill="#3A4757">A. GR 新增的预分配显存（取输入 1024 的一组）</text>
+<line x1="90" y1="400" x2="430" y2="400" stroke="#9AA7B6"/>
+<line x1="90" y1="140" x2="90" y2="400" stroke="#9AA7B6"/>
+<line x1="90" y1="400.0" x2="430" y2="400.0" stroke="#EEF1F5"/>
+<text x="82" y="404.0" font-size="11" fill="#5A6B7B" text-anchor="end">0</text>
+<line x1="90" y1="343.6" x2="430" y2="343.6" stroke="#EEF1F5"/>
+<text x="82" y="347.6" font-size="11" fill="#5A6B7B" text-anchor="end">200</text>
+<line x1="90" y1="287.1" x2="430" y2="287.1" stroke="#EEF1F5"/>
+<text x="82" y="291.1" font-size="11" fill="#5A6B7B" text-anchor="end">400</text>
+<line x1="90" y1="230.7" x2="430" y2="230.7" stroke="#EEF1F5"/>
+<text x="82" y="234.7" font-size="11" fill="#5A6B7B" text-anchor="end">600</text>
+<line x1="90" y1="174.3" x2="430" y2="174.3" stroke="#EEF1F5"/>
+<text x="82" y="178.3" font-size="11" fill="#5A6B7B" text-anchor="end">800</text>
+<text x="30" y="128" font-size="11.5" fill="#5A6B7B">MiB</text>
+<rect x="116.7" y="352.6" width="60" height="47.4" fill="#F2B77A"/>
+<rect x="116.7" y="346.7" width="60" height="5.9" fill="#E8D08A"/>
+<rect x="116.7" y="344.7" width="60" height="2.0" fill="#B8C4D2"/>
+<text x="146.7" y="336.7" font-size="12" font-weight="700" fill="#3A4757" text-anchor="middle">196</text>
+<text x="146.7" y="418" font-size="12" fill="#3A4757" text-anchor="middle">W=64</text>
+<text x="146.7" y="434" font-size="10.5" fill="#5A6B7B" text-anchor="middle">占分页池 1.2%</text>
+<rect x="230.0" y="305.2" width="60" height="94.8" fill="#F2B77A"/>
+<rect x="230.0" y="293.3" width="60" height="11.9" fill="#E8D08A"/>
+<rect x="230.0" y="288.7" width="60" height="4.6" fill="#B8C4D2"/>
+<text x="260.0" y="280.7" font-size="12" font-weight="700" fill="#3A4757" text-anchor="middle">394</text>
+<text x="260.0" y="418" font-size="12" fill="#3A4757" text-anchor="middle">W=128</text>
+<text x="260.0" y="434" font-size="10.5" fill="#5A6B7B" text-anchor="middle">占分页池 2.3%</text>
+<rect x="343.3" y="210.4" width="60" height="189.6" fill="#F2B77A"/>
+<rect x="343.3" y="186.7" width="60" height="23.7" fill="#E8D08A"/>
+<rect x="343.3" y="173.9" width="60" height="12.8" fill="#B8C4D2"/>
+<text x="373.3" y="165.9" font-size="12" font-weight="700" fill="#3A4757" text-anchor="middle">801</text>
+<text x="373.3" y="418" font-size="12" fill="#3A4757" text-anchor="middle">W=256</text>
+<text x="373.3" y="434" font-size="10.5" fill="#5A6B7B" text-anchor="middle">占分页池 4.8%</text>
+<rect x="90" y="450" width="12" height="12" fill="#F2B77A"/>
+<text x="108" y="460" font-size="11.5" fill="#5A6B7B">后缀池</text>
+<rect x="205" y="450" width="12" height="12" fill="#E8D08A"/>
+<text x="223" y="460" font-size="11.5" fill="#5A6B7B">重排 scratch</text>
+<rect x="320" y="450" width="12" height="12" fill="#B8C4D2"/>
+<text x="338" y="460" font-size="11.5" fill="#5A6B7B">其他缓冲</text>
+<text x="490" y="106" font-size="15" font-weight="700" fill="#3A4757">B. 单个 item 的 KV（W=128）</text>
+<line x1="540" y1="400" x2="910" y2="400" stroke="#9AA7B6"/>
+<line x1="540" y1="140" x2="540" y2="400" stroke="#9AA7B6"/>
+<line x1="540" y1="372.1" x2="910" y2="372.1" stroke="#EEF1F5"/>
+<text x="532" y="376.1" font-size="11" fill="#5A6B7B" text-anchor="end">100</text>
+<line x1="540" y1="279.2" x2="910" y2="279.2" stroke="#EEF1F5"/>
+<text x="532" y="283.2" font-size="11" fill="#5A6B7B" text-anchor="end">1,000</text>
+<line x1="540" y1="186.4" x2="910" y2="186.4" stroke="#EEF1F5"/>
+<text x="532" y="190.4" font-size="11" fill="#5A6B7B" text-anchor="end">10,000</text>
+<text x="490" y="128" font-size="11.5" fill="#5A6B7B">MiB（对数）</text>
+<path d="M580.0,199.6 L725.0,171.7 L870.0,143.8" fill="none" stroke="#C0392B" stroke-width="2" stroke-dasharray="6,4"/>
+<circle cx="580.0" cy="199.6" r="4" fill="#C0392B"/>
+<text x="580.0" y="189.6" font-size="11" fill="#C0392B" text-anchor="middle">7,210</text>
+<circle cx="725.0" cy="171.7" r="4" fill="#C0392B"/>
+<text x="725.0" y="161.7" font-size="11" fill="#C0392B" text-anchor="middle">14,378</text>
+<circle cx="870.0" cy="143.8" r="4" fill="#C0392B"/>
+<text x="870.0" y="133.8" font-size="11" fill="#C0392B" text-anchor="middle">28,714</text>
+<path d="M580.0,372.9 L725.0,354.6 L870.0,332.6" fill="none" stroke="#1F7A4D" stroke-width="2"/>
+<circle cx="580.0" cy="372.9" r="4" fill="#1F7A4D"/>
+<text x="580.0" y="362.9" font-size="11" fill="#1F7A4D" text-anchor="middle">98</text>
+<circle cx="725.0" cy="354.6" r="4" fill="#1F7A4D"/>
+<text x="725.0" y="344.6" font-size="11" fill="#1F7A4D" text-anchor="middle">154</text>
+<circle cx="870.0" cy="332.6" r="4" fill="#1F7A4D"/>
+<text x="870.0" y="322.6" font-size="11" fill="#1F7A4D" text-anchor="middle">266</text>
+<text x="580.0" y="418" font-size="12" fill="#3A4757" text-anchor="middle">输入 512</text>
+<text x="725.0" y="418" font-size="12" fill="#3A4757" text-anchor="middle">输入 1024</text>
+<text x="870.0" y="418" font-size="12" fill="#3A4757" text-anchor="middle">输入 2048</text>
+<line x1="540" y1="446" x2="562" y2="446" stroke="#C0392B" stroke-width="2" stroke-dasharray="6,4"/>
+<text x="568" y="450" font-size="11.5" fill="#5A6B7B">每条 beam 持有完整 KV（计算）</text>
+<line x1="540" y1="464" x2="562" y2="464" stroke="#1F7A4D" stroke-width="2"/>
+<text x="568" y="468" font-size="11.5" fill="#5A6B7B">vLLM-GR（实测块数 + 实测后缀 slot）</text>
+<text x="20" y="500" font-size="15" font-weight="700" fill="#3A4757">全部实测组</text>
+<rect x="20" y="512" width="900" height="26" fill="#F0F3F7"/>
+<text x="36" y="530" font-size="11.5" font-weight="700" fill="#3A4757">W</text>
+<text x="100" y="530" font-size="11.5" font-weight="700" fill="#3A4757">输入</text>
+<text x="180" y="530" font-size="11.5" font-weight="700" fill="#3A4757">后缀池</text>
+<text x="280" y="530" font-size="11.5" font-weight="700" fill="#3A4757">scratch</text>
+<text x="370" y="530" font-size="11.5" font-weight="700" fill="#3A4757">其他</text>
+<text x="450" y="530" font-size="11.5" font-weight="700" fill="#3A4757">GR 合计</text>
+<text x="560" y="530" font-size="11.5" font-weight="700" fill="#3A4757">分页池</text>
+<text x="680" y="530" font-size="11.5" font-weight="700" fill="#3A4757">请求后缓存块</text>
+<text x="820" y="530" font-size="11.5" font-weight="700" fill="#3A4757">返回 beam</text>
+<text x="36" y="555" font-size="11.5" fill="#3A4757">64</text>
+<text x="100" y="555" font-size="11.5" fill="#3A4757">512</text>
+<text x="180" y="555" font-size="11.5" fill="#3A4757">168</text>
+<text x="280" y="555" font-size="11.5" fill="#3A4757">21.0</text>
+<text x="370" y="555" font-size="11.5" fill="#3A4757">7.0</text>
+<text x="450" y="555" font-size="11.5" fill="#3A4757">196.0</text>
+<text x="560" y="555" font-size="11.5" fill="#3A4757">16,984</text>
+<text x="680" y="555" font-size="11.5" fill="#3A4757">32</text>
+<text x="820" y="555" font-size="11.5" fill="#3A4757">64</text>
+<line x1="20" y1="562" x2="920" y2="562" stroke="#E3E8EE"/>
+<text x="36" y="579" font-size="11.5" fill="#3A4757">64</text>
+<text x="100" y="579" font-size="11.5" fill="#3A4757">1024</text>
+<text x="180" y="579" font-size="11.5" fill="#3A4757">168</text>
+<text x="280" y="579" font-size="11.5" fill="#3A4757">21.0</text>
+<text x="370" y="579" font-size="11.5" fill="#3A4757">7.0</text>
+<text x="450" y="579" font-size="11.5" fill="#3A4757">196.0</text>
+<text x="560" y="579" font-size="11.5" fill="#3A4757">16,984</text>
+<text x="680" y="579" font-size="11.5" fill="#3A4757">64</text>
+<text x="820" y="579" font-size="11.5" fill="#3A4757">64</text>
+<line x1="20" y1="586" x2="920" y2="586" stroke="#E3E8EE"/>
+<text x="36" y="603" font-size="11.5" fill="#3A4757">64</text>
+<text x="100" y="603" font-size="11.5" fill="#3A4757">2048</text>
+<text x="180" y="603" font-size="11.5" fill="#3A4757">168</text>
+<text x="280" y="603" font-size="11.5" fill="#3A4757">21.0</text>
+<text x="370" y="603" font-size="11.5" fill="#3A4757">7.0</text>
+<text x="450" y="603" font-size="11.5" fill="#3A4757">196.0</text>
+<text x="560" y="603" font-size="11.5" fill="#3A4757">16,984</text>
+<text x="680" y="603" font-size="11.5" fill="#3A4757">128</text>
+<text x="820" y="603" font-size="11.5" fill="#3A4757">64</text>
+<line x1="20" y1="610" x2="920" y2="610" stroke="#E3E8EE"/>
+<text x="36" y="627" font-size="11.5" fill="#3A4757">128</text>
+<text x="100" y="627" font-size="11.5" fill="#3A4757">512</text>
+<text x="180" y="627" font-size="11.5" fill="#3A4757">336</text>
+<text x="280" y="627" font-size="11.5" fill="#3A4757">42.0</text>
+<text x="370" y="627" font-size="11.5" fill="#3A4757">16.4</text>
+<text x="450" y="627" font-size="11.5" fill="#3A4757">394.4</text>
+<text x="560" y="627" font-size="11.5" fill="#3A4757">16,819</text>
+<text x="680" y="627" font-size="11.5" fill="#3A4757">32</text>
+<text x="820" y="627" font-size="11.5" fill="#3A4757">128</text>
+<line x1="20" y1="634" x2="920" y2="634" stroke="#E3E8EE"/>
+<text x="36" y="651" font-size="11.5" fill="#3A4757">128</text>
+<text x="100" y="651" font-size="11.5" fill="#3A4757">1024</text>
+<text x="180" y="651" font-size="11.5" fill="#3A4757">336</text>
+<text x="280" y="651" font-size="11.5" fill="#3A4757">42.0</text>
+<text x="370" y="651" font-size="11.5" fill="#3A4757">16.4</text>
+<text x="450" y="651" font-size="11.5" fill="#3A4757">394.4</text>
+<text x="560" y="651" font-size="11.5" fill="#3A4757">16,819</text>
+<text x="680" y="651" font-size="11.5" fill="#3A4757">64</text>
+<text x="820" y="651" font-size="11.5" fill="#3A4757">128</text>
+<line x1="20" y1="658" x2="920" y2="658" stroke="#E3E8EE"/>
+<text x="36" y="675" font-size="11.5" fill="#3A4757">128</text>
+<text x="100" y="675" font-size="11.5" fill="#3A4757">2048</text>
+<text x="180" y="675" font-size="11.5" fill="#3A4757">336</text>
+<text x="280" y="675" font-size="11.5" fill="#3A4757">42.0</text>
+<text x="370" y="675" font-size="11.5" fill="#3A4757">16.4</text>
+<text x="450" y="675" font-size="11.5" fill="#3A4757">394.4</text>
+<text x="560" y="675" font-size="11.5" fill="#3A4757">16,819</text>
+<text x="680" y="675" font-size="11.5" fill="#3A4757">128</text>
+<text x="820" y="675" font-size="11.5" fill="#3A4757">128</text>
+<line x1="20" y1="682" x2="920" y2="682" stroke="#E3E8EE"/>
+<text x="36" y="699" font-size="11.5" fill="#3A4757">256</text>
+<text x="100" y="699" font-size="11.5" fill="#3A4757">512</text>
+<text x="180" y="699" font-size="11.5" fill="#3A4757">672</text>
+<text x="280" y="699" font-size="11.5" fill="#3A4757">84.0</text>
+<text x="370" y="699" font-size="11.5" fill="#3A4757">45.3</text>
+<text x="450" y="699" font-size="11.5" fill="#3A4757">801.3</text>
+<text x="560" y="699" font-size="11.5" fill="#3A4757">16,707</text>
+<text x="680" y="699" font-size="11.5" fill="#3A4757">32</text>
+<text x="820" y="699" font-size="11.5" fill="#3A4757">256</text>
+<line x1="20" y1="706" x2="920" y2="706" stroke="#E3E8EE"/>
+<text x="36" y="723" font-size="11.5" fill="#3A4757">256</text>
+<text x="100" y="723" font-size="11.5" fill="#3A4757">1024</text>
+<text x="180" y="723" font-size="11.5" fill="#3A4757">672</text>
+<text x="280" y="723" font-size="11.5" fill="#3A4757">84.0</text>
+<text x="370" y="723" font-size="11.5" fill="#3A4757">45.3</text>
+<text x="450" y="723" font-size="11.5" fill="#3A4757">801.3</text>
+<text x="560" y="723" font-size="11.5" fill="#3A4757">16,707</text>
+<text x="680" y="723" font-size="11.5" fill="#3A4757">64</text>
+<text x="820" y="723" font-size="11.5" fill="#3A4757">256</text>
+<line x1="20" y1="730" x2="920" y2="730" stroke="#E3E8EE"/>
+<text x="36" y="747" font-size="11.5" fill="#3A4757">256</text>
+<text x="100" y="747" font-size="11.5" fill="#3A4757">2048</text>
+<text x="180" y="747" font-size="11.5" fill="#3A4757">672</text>
+<text x="280" y="747" font-size="11.5" fill="#3A4757">84.0</text>
+<text x="370" y="747" font-size="11.5" fill="#3A4757">45.3</text>
+<text x="450" y="747" font-size="11.5" fill="#3A4757">801.3</text>
+<text x="560" y="747" font-size="11.5" fill="#3A4757">16,707</text>
+<text x="680" y="747" font-size="11.5" fill="#3A4757">128</text>
+<text x="820" y="747" font-size="11.5" fill="#3A4757">256</text>
+<line x1="20" y1="754" x2="920" y2="754" stroke="#E3E8EE"/>
+<text x="20" y="780" font-size="11" fill="#5A6B7B">单位 MiB。"请求后缓存块"为调度器块池中带哈希的整块数，等于 输入长度 / 16，与 W 无关，说明每个 item 的 prompt 只以一份整块进入前缀缓存。</text>
+<text x="20" y="800" font-size="11" fill="#5A6B7B">B 图中 vLLM-GR 一条 = 缓存块数 × 16 × 每 token KV（实测 114,688 B）+ 后缀池 / max_batch；"完整 KV"一条按 W × (输入 + 3) × 每 token KV 计算，未实测。</text>
+<text x="20" y="820" font-size="11" fill="#5A6B7B">gpu_memory_utilization=0.5；分页池大小随 GR 预分配略有变化。代码基线 vLLM-GR decode_graph 7461a48，vLLM 0.22.1。</text>
+</svg>
