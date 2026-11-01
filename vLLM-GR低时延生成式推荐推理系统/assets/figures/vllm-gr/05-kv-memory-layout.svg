@@ -134,5 +134,5 @@
   </g>
 
   <text x="20" y="774" font-size="11.5" fill="#5A6B7B">每 token KV = 2(K/V) × 28 层 × 8 KV head × 128 dim × 2 B（bf16）= 114,688 B，与实测一致。示意图不按比例绘制。</text>
-  <text x="20" y="794" font-size="11.5" fill="#5A6B7B">实测环境：L20，gpu_memory_utilization=0.5，vllm 0.22.1，vllm-gr 7461a48（decode_graph 分支）。首个请求前后 GR 张量大小不变，均为启动时预分配。</text>
+  <text x="20" y="794" font-size="11.5" fill="#5A6B7B">实测环境：L20，gpu_memory_utilization=0.5，vllm 0.22.1，vllm-gr 33a1fdb（decode_graph 分支）。首个请求前后 GR 张量大小不变，均为启动时预分配。</text>
 </svg>

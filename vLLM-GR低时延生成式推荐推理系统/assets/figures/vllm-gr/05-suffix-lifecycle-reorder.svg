@@ -124,5 +124,5 @@
   </g>
 
   <text x="20" y="764" font-size="11.5" fill="#5A6B7B">示意中每行代表一条 beam 在全部层、全部 KV head 上的后缀；"历史 A/B/C/D"为教学标记。</text>
-  <text x="20" y="784" font-size="11.5" fill="#5A6B7B">代码：vllm_gr/ops/cuda/beam_kv_reorder.py、vllm_gr/v1/beam/beam_search_session.py（decode_graph 分支 7461a48）。</text>
+  <text x="20" y="784" font-size="11.5" fill="#5A6B7B">代码：vllm_gr/ops/cuda/beam_kv_reorder.py、vllm_gr/v1/beam/beam_search_session.py（decode_graph 分支 33a1fdb）。</text>
 </svg>

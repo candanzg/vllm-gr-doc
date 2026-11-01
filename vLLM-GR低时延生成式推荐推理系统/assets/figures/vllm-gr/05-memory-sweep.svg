@@ -175,5 +175,5 @@
 <line x1="20" y1="754" x2="920" y2="754" stroke="#E3E8EE"/>
 <text x="20" y="780" font-size="11" fill="#5A6B7B">单位 MiB。"请求后缓存块"为调度器块池中带哈希的整块数，等于 输入长度 / 16，与 W 无关，说明每个 item 的 prompt 只以一份整块进入前缀缓存。</text>
 <text x="20" y="800" font-size="11" fill="#5A6B7B">B 图中 vLLM-GR 一条 = 缓存块数 × 16 × 每 token KV（实测 114,688 B）+ 后缀池 / max_batch；"完整 KV"一条按 W × (输入 + 3) × 每 token KV 计算，未实测。</text>
-<text x="20" y="820" font-size="11" fill="#5A6B7B">gpu_memory_utilization=0.5；分页池大小随 GR 预分配略有变化。代码基线 vLLM-GR decode_graph 7461a48，vLLM 0.22.1。</text>
+<text x="20" y="820" font-size="11" fill="#5A6B7B">gpu_memory_utilization=0.5；分页池大小随 GR 预分配略有变化。代码基线 vLLM-GR decode_graph 33a1fdb，vLLM 0.22.1。</text>
 </svg>

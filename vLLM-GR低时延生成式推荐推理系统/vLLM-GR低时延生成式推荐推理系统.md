@@ -439,7 +439,7 @@ beam:
 
 把共享前缀和私有后缀分开计算，这一思路参考了 Hydragen 和 xGR；后缀池的布局和 NPU 算子签名则与 xllm-ops 保持一致。本章着重介绍它在 vLLM 插件框架中的落地方式，以及在 L20 上实测的显存和延迟。
 
-文中的显存数据取自 vLLM-GR `decode_graph` 分支 `7461a48`，测试环境为单张 L20，模型为 OneRec-1.7B。
+文中的显存数据取自 vLLM-GR `decode_graph` 分支 `33a1fdb`，测试环境为单张 L20，模型为 OneRec-1.7B。
 
 ### 5.1 GR 负载下的 KV 特征
 
@@ -469,7 +469,7 @@ vLLM 的 APC 以 16 token 为一块做前缀共享。1024 token 的 prompt 正�
 
 两级 KV 在 Decode attention 中汇合：prefix 和 suffix 各自算出局部输出与 log-sum-exp，再按 LSE 加权合并（见第 2 章图 5）。
 
-后缀池上的操作只有三类：写入本步 K/V、两级 attention、按父索引重排。GPU 和 NPU 共用同一份池布局 `[slot, beam, kv_head, step, head_dim]`，各自提供算子实现。在 CUDA 上，写入由 Triton kernel 完成，步号从设备端的标量缓冲读取，因此可以被图捕获；attention 由 prefix 部分的 FlashAttention、后缀 attention 和 LSE 合并组成；重排采用全层 gather/scatter。在 NPU 上，则直接调用 xllm-ops 的 `cache_unshared_kv`、`x_attention` 和 `select_unshared_kv`。两个平台还共用一份 Torch 参考实现做数值对照。这样，上层的调度、决策和结果打包逻辑都不必区分底层平台。
+后缀池上的操作只有三类：写入本步 K/V、两级 attention、按父索引重排。GPU 和 NPU 共用同一份池布局 `[slot, beam, kv_head, step, head_dim]`，各自提供算子实现。在 CUDA 上，写入由 Triton kernel 完成，步号从设备端的标量缓冲读取，因此可以被图捕获；attention 的 prefix 部分使用 FlashAttention，后缀计算与 LSE 合并融合在一个 Triton kernel 中；重排采用全层 gather/scatter。在 NPU 上，则直接调用 xllm-ops 的 `cache_unshared_kv`、`x_attention` 和 `select_unshared_kv`。两个平台还共用一份 Torch 参考实现做数值对照。这样，上层的调度、决策和结果打包逻辑都不必区分底层平台。
 
 ### 5.3 后缀池的生命周期与父索引重排
 
@@ -499,10 +499,10 @@ vLLM-GR 在 CUDA 上把重排拆成两段：先 gather，按父索引把各行�
 
 | | p50 | p90 | p99 |
 |---|---|---|---|
-| cache-miss | 53.89 ms | 54.02 ms | 54.29 ms |
-| cache-hit | 28.69 ms | 28.85 ms | 29.28 ms |
+| cache-miss | 52.08 ms | 52.13 ms | 52.97 ms |
+| cache-hit | 33.01 ms | 33.28 ms | 33.95 ms |
 
-命中后 p50 降低 25.2 ms，约 47%。两组样本都很集中，miss 的 p50 与 p99 只差 0.4 ms，hit 差 0.6 ms。
+命中后 p50 降低 19.1 ms，约 37%。两组样本都很集中，miss 和 hit 的 p50 与 p99 都只差约 0.9 ms。
 
 这里有一个需要留意的配置项：prefill 图的 KV 上限。cache-hit 的 Prefill 虽然只调度 16 个 token，读取的却是完整长度的上下文 KV。如果环境变量 `VLLM_GR_PREFILL_GRAPH_KV_BOUND` 小于完整 prompt 长度，这一步会静默回落到 eager 执行。对照实验中，这会使 hit 的 p50 增加约 23 ms，命中的收益几乎被抵消；而 miss 侧只受约 0.3% 的影响，只看 miss 的数据很容易忽略这个问题。该变量在每个 Worker 进程捕获图时读取一次，应设为不小于 prompt 长度的值，例如直接取 `max_model_len`。
 
@@ -548,7 +548,7 @@ scratch = 2(K/V) × L × W × H_kv × S × head_dim × dtype 字节
 
 概括起来，vLLM-GR 的做法是：prompt KV 交给 vLLM，后缀 KV 由 GR 自己管理。前者依靠上游的分页池和 APC 完成跨请求复用，GR 不做改动；后者是一块地址固定的稠密池，配合写入、两级 attention 和两段式重排三类算子，GPU 与 NPU 遵守同一份布局契约。
 
-在 OneRec-1.7B、W=128 的配置下，单个 item 的 KV 从完全不共享时的约 14 GiB 降至 154 MiB，GR 额外预分配的显存约为分页池的 2.3%；相同上下文再次提交时，端到端 p50 从 53.89 ms 降至 28.69 ms。
+在 OneRec-1.7B、W=128 的配置下，单个 item 的 KV 从完全不共享时的约 14 GiB 降至 154 MiB，GR 额外预分配的显存约为分页池的 2.3%；相同上下文再次提交时，端到端 p50 从 52.08 ms 降至 33.01 ms。
 
 [gr05-layout]: ./assets/figures/vllm-gr/05-kv-memory-layout.svg
 [gr05-two-level]: ./assets/figures/vllm-gr/05-two-level-kv.svg

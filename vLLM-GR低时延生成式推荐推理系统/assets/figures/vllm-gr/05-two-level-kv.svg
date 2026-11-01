@@ -87,7 +87,7 @@
     <line x1="20" y1="574" x2="920" y2="574" stroke="#E3E8EE"/>
 
     <text x="36" y="598" fill="#3A4757" font-weight="700">两级 attention</text>
-    <text x="180" y="598" fill="#3A4757">prefix FlashAttention + 后缀 attention + LSE 合并</text>
+    <text x="180" y="598" fill="#3A4757">prefix 用 FlashAttention；后缀计算与 LSE 合并融合为一个 Triton kernel</text>
     <text x="570" y="598" fill="#3A4757">x_attention（单次融合调用）</text>
     <line x1="20" y1="610" x2="920" y2="610" stroke="#E3E8EE"/>
 
@@ -101,5 +101,5 @@
   </g>
 
   <text x="20" y="712" font-size="11.5" fill="#5A6B7B">后缀池布局与 NPU 算子签名对齐 xllm-ops；共享前缀与私有后缀分离计算的思路参考了 Hydragen 与 xGR。</text>
-  <text x="20" y="732" font-size="11.5" fill="#5A6B7B">逻辑示意，不按显存比例绘制。代码基线：vLLM-GR decode_graph 分支 7461a48。</text>
+  <text x="20" y="732" font-size="11.5" fill="#5A6B7B">逻辑示意，不按显存比例绘制。代码基线：vLLM-GR decode_graph 分支 33a1fdb。</text>
 </svg>
