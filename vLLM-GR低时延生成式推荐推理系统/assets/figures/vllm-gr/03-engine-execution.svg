@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="935" viewBox="0 0 1440 935" role="img" aria-labelledby="title desc">
+<title id="title">GR-Engine：设备执行链与前向图边界</title>
+<desc id="desc">固定宽度示例：N=3，共享 prompt KV，阶段之间保留 Beam token / score / parent。</desc>
+<style>text{font-family:"Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif}</style>
+<rect width="1440" height="935" fill="white"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#60768D"/></marker></defs>
+<text x="40" y="60" font-size="32" font-weight="700" fill="#24364B" text-anchor="start">GR-Engine：设备执行链与前向图边界</text>
+<text x="40" y="103" font-size="21" font-weight="400" fill="#60768D" text-anchor="start">固定宽度示例：N=3，共享 prompt KV，阶段之间保留 Beam token / score / parent。</text>
+<text x="40" y="204" font-size="25" font-weight="700" fill="#24364B" text-anchor="start">Prefill</text>
+<text x="40" y="240" font-size="19" font-weight="400" fill="#60768D" text-anchor="start">处理上下文</text>
+<rect x="220" y="160" width="300" height="145" rx="12" fill="#E3F1FB" stroke="#8AA3BA" stroke-width="1.6" stroke-dasharray="9 6"/>
+<text x="240" y="197" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">Prefill Forward</text>
+<text x="240" y="233" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">B 条 prompt</text>
+<text x="240" y="264" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">取各自最后位置</text>
+<rect x="560" y="160" width="175" height="145" rx="12" fill="#FFF6D6" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="580" y="197" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">LM-head</text>
+<text x="580" y="233" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">输出投影</text>
+<text x="580" y="264" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">产生 logits</text>
+<rect x="775" y="160" width="280" height="145" rx="12" fill="#F8DDE4" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="795" y="197" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">首次选择</text>
+<text x="795" y="233" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">每请求最多 K 个候选</text>
+<text x="795" y="264" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">初始化有效 Beam</text>
+<rect x="1095" y="160" width="305" height="145" rx="12" fill="#E0F2EA" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="1115" y="197" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">生成第 1 段</text>
+<text x="1115" y="233" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">设备端 Beam 状态</text>
+<text x="1115" y="264" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">共享 prompt KV 已就绪</text>
+<polyline points="520,233 550,233" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="735,233 765,233" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1055,233 1085,233" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1245,305 1245,341 370,341 370,375" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="630" y="333" font-size="19" font-weight="400" fill="#60768D" text-anchor="start">设备状态进入下一阶段；主机消费紧凑控制回执</text>
+<text x="40" y="429" font-size="25" font-weight="700" fill="#24364B" text-anchor="start">Decode 1</text>
+<text x="40" y="465" font-size="19" font-weight="400" fill="#60768D" text-anchor="start">生成第 2 段</text>
+<rect x="220" y="385" width="300" height="145" rx="12" fill="#E3F1FB" stroke="#8AA3BA" stroke-width="1.6" stroke-dasharray="9 6"/>
+<text x="240" y="422" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">Decode Forward</text>
+<text x="240" y="458" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">B×W 个物理行</text>
+<text x="240" y="489" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">读取共享 prefix / suffix</text>
+<rect x="560" y="385" width="175" height="145" rx="12" fill="#FFF6D6" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="580" y="422" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">LM-head</text>
+<text x="580" y="458" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">输出投影</text>
+<text x="580" y="489" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">产生 logits</text>
+<rect x="775" y="385" width="280" height="145" rx="12" fill="#F8DDE4" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="795" y="422" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">扩展与选择</text>
+<text x="795" y="458" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">每请求最多 W×K 候选</text>
+<text x="795" y="489" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">累计父分数并保留后继</text>
+<rect x="1095" y="385" width="305" height="145" rx="12" fill="#E0F2EA" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="1115" y="422" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">更新与父重排</text>
+<text x="1115" y="458" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">token / score / parent</text>
+<text x="1115" y="489" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">重排私有 suffix KV</text>
+<polyline points="520,458 550,458" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="735,458 765,458" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1055,458 1085,458" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1245,530 1245,566 370,566 370,600" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="630" y="558" font-size="19" font-weight="400" fill="#60768D" text-anchor="start">设备状态进入下一阶段；主机消费紧凑控制回执</text>
+<text x="40" y="654" font-size="25" font-weight="700" fill="#24364B" text-anchor="start">Decode 2</text>
+<text x="40" y="690" font-size="19" font-weight="400" fill="#60768D" text-anchor="start">生成第 3 段</text>
+<rect x="220" y="610" width="300" height="145" rx="12" fill="#E3F1FB" stroke="#8AA3BA" stroke-width="1.6" stroke-dasharray="9 6"/>
+<text x="240" y="647" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">Decode Forward</text>
+<text x="240" y="683" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">B×W 个物理行</text>
+<text x="240" y="714" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">读取更新后的历史</text>
+<rect x="560" y="610" width="175" height="145" rx="12" fill="#FFF6D6" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="580" y="647" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">LM-head</text>
+<text x="580" y="683" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">输出投影</text>
+<text x="580" y="714" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">产生 logits</text>
+<rect x="775" y="610" width="280" height="145" rx="12" fill="#F8DDE4" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="795" y="647" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">末步候选</text>
+<text x="795" y="683" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">完成第三段 SID</text>
+<text x="795" y="714" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">写入完成候选</text>
+<rect x="1095" y="610" width="305" height="145" rx="12" fill="#E0F2EA" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="1115" y="647" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">终态选择与打包</text>
+<text x="1115" y="683" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">每请求返回 R 条序列</text>
+<text x="1115" y="714" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">候选 + 控制头，一次 D2H</text>
+<polyline points="520,683 550,683" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="735,683 765,683" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1055,683 1085,683" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="40" y="821" font-size="22" font-weight="400" fill="#24364B" text-anchor="start">虚线框：可捕获 / 重放的模型前向，包含模型内 Attention 与 KV 写入。</text>
+<text x="40" y="861" font-size="22" font-weight="400" fill="#24364B" text-anchor="start">图外仍有输出投影、候选决策与状态处理；具体捕获时机随 ModelRunner 路径而异。</text>
+<text x="40" y="902" font-size="20" font-weight="400" fill="#60768D" text-anchor="start">逻辑依赖示意，非耗时比例图。最后选出的 token 无需额外一次 Decode forward。</text>
+</svg>

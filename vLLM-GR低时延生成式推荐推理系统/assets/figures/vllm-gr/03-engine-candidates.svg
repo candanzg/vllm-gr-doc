@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1000" viewBox="0 0 1440 1000" role="img" aria-labelledby="title desc">
+<title id="title">GR-Engine：三个独立的候选控制维度</title>
+<desc id="desc">词表窗口决定计算与评分域，目录决定合法后继，W / K / R 决定搜索及输出规模。</desc>
+<style>text{font-family:"Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif}</style>
+<rect width="1440" height="1000" fill="white"/>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8" fill="#60768D"/></marker></defs>
+<text x="40" y="60" font-size="32" font-weight="700" fill="#24364B" text-anchor="start">GR-Engine：三个独立的候选控制维度</text>
+<text x="40" y="103" font-size="21" font-weight="400" fill="#60768D" text-anchor="start">词表窗口决定计算与评分域，目录决定合法后继，W / K / R 决定搜索及输出规模。</text>
+<rect x="40" y="145" width="610" height="165" rx="12" fill="#E3F1FB" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="60" y="182" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">词表窗口 D：输出投影与归一化</text>
+<text x="60" y="218" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">hidden states → LM-head 权重窗口 → logits</text>
+<text x="60" y="249" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">所有父行使用同一词表域 D；切片会改变评分域</text>
+<rect x="790" y="145" width="610" height="165" rx="12" fill="#FFF6D6" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="810" y="182" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">目录关系 A_i：当前父节点的合法后继</text>
+<text x="810" y="218" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">a → b，(a,b) → c；查设备端 Constraint Table</text>
+<text x="810" y="249" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">每个父节点的合法集合可以不同</text>
+<polyline points="345,310 345,345 535,345 535,380" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<polyline points="1095,310 1095,345 905,345 905,380" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="220" y="390" width="1000" height="155" rx="12" fill="#F8DDE4" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="240" y="427" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">局部选择：每个父节点最多 K 个候选</text>
+<text x="240" y="463" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">只允许合法 token 进入候选；logprob 的分母仍覆盖完整窗口 D</text>
+<text x="240" y="494" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">输出 token ID、FP32 分数、有效掩码；累计对应父 Beam 的分数</text>
+<polyline points="720,545 720,585" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="220" y="595" width="1000" height="145" rx="12" fill="#F8DDE4" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="240" y="632" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">请求内选择：从 W×K 个候选中保留后继</text>
+<text x="240" y="668" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">不同请求独立竞争；选择父索引并更新序列、分数和 suffix KV</text>
+<text x="240" y="699" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">动态路径按该阶段的输入宽度与输出宽度执行</text>
+<polyline points="720,740 720,780" fill="none" stroke="#60768D" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="220" y="790" width="1000" height="110" rx="12" fill="#E0F2EA" stroke="#8AA3BA" stroke-width="1.6"/>
+<text x="240" y="827" font-size="24" font-weight="700" fill="#24364B" text-anchor="start">完成搜索：按请求返回 R 条结果</text>
+<text x="240" y="863" font-size="21" font-weight="400" fill="#24364B" text-anchor="start">R 控制终态输出规模；前面阶段的 W 与 K 独立配置</text>
+<text x="40" y="953" font-size="22" font-weight="400" fill="#60768D" text-anchor="start">目录过滤、词表裁剪和减小 K 的作用位置不同，应分别评估时延、评分变化与业务 Recall。</text>
+</svg>

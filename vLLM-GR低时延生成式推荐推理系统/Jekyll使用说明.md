@@ -101,7 +101,7 @@ find "_includes/vllm-gr" -maxdepth 1 -type f -name "*.md" -print | sort
 每个人可以负责一个章节。章节文件只保留标题和正文，不要添加 YAML front matter：
 
 ```markdown
-# 3 低时延推理引起GR-Engin
+# 3 低时延推理引擎 GR-Engine
 
 ## 3.1 Beam Search 优化
 
