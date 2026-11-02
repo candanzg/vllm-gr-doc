@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="820" viewBox="0 0 920 820" font-family="'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','PingFang SC','Microsoft YaHei',sans-serif" role="img">
+  <title>KV 显存布局：共享 prompt + 私有短后缀</title>
+  <defs>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B7C8F"/>
+    </marker>
+  </defs>
+  <rect width="920" height="820" fill="#ffffff"/>
+
+  <text x="20" y="40" font-size="22" font-weight="700" fill="#1F2D3D">KV 显存布局：共享 prompt + 私有短后缀</text>
+  <text x="20" y="68" font-size="12.5" fill="#5A6B7B">OneRec-1.7B，一个 item，W=128，prompt 1024 token，有效 N=3。每 token KV（28 层合计）为 112 KiB。</text>
+
+  <!-- ============ Panel A ============ -->
+  <rect x="20" y="90" width="430" height="330" rx="10" fill="#FAFBFC" stroke="#D5DCE4"/>
+  <text x="40" y="118" font-size="15" font-weight="700" fill="#3A4757">A. 每条 beam 独立持有完整 KV（不共享）</text>
+
+  <g font-size="11.5" fill="#3A4757">
+    <text x="40" y="160">beam 0</text>
+    <rect x="100" y="146" width="280" height="20" rx="3" fill="#E8F1FB" stroke="#6B9BD1"/>
+    <rect x="382" y="146" width="24" height="20" rx="3" fill="#FDEBD9" stroke="#E0A060"/>
+
+    <text x="40" y="192">beam 1</text>
+    <rect x="100" y="178" width="280" height="20" rx="3" fill="#E8F1FB" stroke="#6B9BD1"/>
+    <rect x="382" y="178" width="24" height="20" rx="3" fill="#FDEBD9" stroke="#E0A060"/>
+
+    <text x="40" y="224">beam 2</text>
+    <rect x="100" y="210" width="280" height="20" rx="3" fill="#E8F1FB" stroke="#6B9BD1"/>
+    <rect x="382" y="210" width="24" height="20" rx="3" fill="#FDEBD9" stroke="#E0A060"/>
+
+    <text x="240" y="256" text-anchor="middle" font-size="16" fill="#8A97A6">⋮</text>
+
+    <text x="40" y="290">beam 127</text>
+    <rect x="100" y="276" width="280" height="20" rx="3" fill="#E8F1FB" stroke="#6B9BD1"/>
+    <rect x="382" y="276" width="24" height="20" rx="3" fill="#FDEBD9" stroke="#E0A060"/>
+  </g>
+  <text x="240" y="161" font-size="11" fill="#1F4E86" text-anchor="middle">prompt 1024 token</text>
+  <text x="394" y="138" font-size="10.5" fill="#B0702C" text-anchor="middle">3 步</text>
+
+  <text x="40" y="336" font-size="12.5" fill="#3A4757">同一份 prompt KV 被复制 128 份</text>
+  <text x="40" y="360" font-size="12.5" fill="#3A4757">128 × (1024 + 3) × 112 KiB</text>
+  <text x="40" y="396" font-size="20" font-weight="700" fill="#A3203A">≈ 14,378 MiB（14.0 GiB）</text>
+
+  <!-- ============ Panel B ============ -->
+  <rect x="470" y="90" width="430" height="330" rx="10" fill="#FAFBFC" stroke="#D5DCE4"/>
+  <text x="490" y="118" font-size="15" font-weight="700" fill="#3A4757">B. vLLM-GR</text>
+
+  <!-- paged prompt -->
+  <text x="490" y="146" font-size="12" fill="#1F4E86" font-weight="700">分页 prompt KV（复用 vLLM，只存一份）</text>
+  <g fill="#E8F1FB" stroke="#6B9BD1">
+    <rect x="490" y="156" width="44" height="24" rx="3"/>
+    <rect x="538" y="156" width="44" height="24" rx="3"/>
+    <rect x="586" y="156" width="44" height="24" rx="3"/>
+    <rect x="684" y="156" width="44" height="24" rx="3"/>
+  </g>
+  <g font-size="10.5" fill="#1F4E86" text-anchor="middle">
+    <text x="512" y="172">块 0</text>
+    <text x="560" y="172">块 1</text>
+    <text x="608" y="172">块 2</text>
+    <text x="657" y="173" font-size="14" fill="#8A97A6">…</text>
+    <text x="706" y="172">块 63</text>
+  </g>
+  <text x="740" y="173" font-size="11" fill="#5A6B7B">64 块 × 16 token</text>
+
+  <line x1="610" y1="182" x2="610" y2="208" stroke="#6B7C8F" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="620" y="200" font-size="11" fill="#5A6B7B">128 条 beam 共读同一份</text>
+
+  <!-- suffix pool -->
+  <text x="490" y="230" font-size="12" fill="#B0702C" font-weight="700">BeamAttentionPool：每个 item 占一个 slot（GR 新增）</text>
+  <g font-size="10.5" fill="#B0702C" text-anchor="middle">
+    <text x="604" y="250">step 1</text>
+    <text x="648" y="250">step 2</text>
+    <text x="692" y="250">step 3</text>
+  </g>
+  <g font-size="11" fill="#3A4757">
+    <text x="490" y="272">beam 0</text>
+    <text x="490" y="298">beam 1</text>
+    <text x="490" y="340">beam 127</text>
+  </g>
+  <g fill="#FDEBD9" stroke="#E0A060">
+    <rect x="584" y="258" width="40" height="20" rx="2"/>
+    <rect x="628" y="258" width="40" height="20" rx="2"/>
+    <rect x="672" y="258" width="40" height="20" rx="2"/>
+    <rect x="584" y="284" width="40" height="20" rx="2"/>
+    <rect x="628" y="284" width="40" height="20" rx="2"/>
+    <rect x="672" y="284" width="40" height="20" rx="2"/>
+    <rect x="584" y="326" width="40" height="20" rx="2"/>
+    <rect x="628" y="326" width="40" height="20" rx="2"/>
+    <rect x="672" y="326" width="40" height="20" rx="2"/>
+  </g>
+  <text x="648" y="320" font-size="14" fill="#8A97A6" text-anchor="middle">⋮</text>
+  <text x="726" y="276" font-size="10.5" fill="#5A6B7B">每层形状</text>
+  <text x="726" y="292" font-size="10.5" fill="#5A6B7B">[128, 8 head, 3, 128]</text>
+  <text x="726" y="308" font-size="10.5" fill="#5A6B7B">K/V 各一份 × 28 层</text>
+  <text x="726" y="324" font-size="10.5" fill="#5A6B7B">地址固定，可图回放</text>
+
+  <text x="490" y="372" font-size="12.5" fill="#3A4757">112 MiB（prompt）+ 42 MiB（后缀 slot）</text>
+  <text x="490" y="396" font-size="20" font-weight="700" fill="#1F7A4D">= 154 MiB</text>
+  <text x="620" y="396" font-size="12.5" fill="#1F7A4D">约为 A 的 1/93</text>
+
+  <!-- ============ comparison table ============ -->
+  <text x="20" y="460" font-size="15" font-weight="700" fill="#1F2D3D">单个 item 的 KV 占用</text>
+  <g font-size="12.5">
+    <rect x="20" y="472" width="880" height="30" fill="#F0F3F7"/>
+    <text x="36" y="492" font-weight="700" fill="#3A4757">布局</text>
+    <text x="380" y="492" font-weight="700" fill="#3A4757">KV 占用</text>
+    <text x="560" y="492" font-weight="700" fill="#3A4757">数据来源</text>
+
+    <text x="36" y="526" fill="#3A4757">A. 每条 beam 独立持有完整 KV</text>
+    <text x="380" y="526" fill="#A3203A" font-weight="700">14,378 MiB</text>
+    <text x="560" y="526" fill="#5A6B7B">按实测的每 token 字节数计算</text>
+    <line x1="20" y1="538" x2="900" y2="538" stroke="#E3E8EE"/>
+
+    <text x="36" y="562" fill="#3A4757">块粒度前缀共享（vLLM APC）</text>
+    <text x="380" y="562" fill="#8A6A00" font-weight="700">≈ 336 MiB</text>
+    <text x="560" y="562" fill="#5A6B7B">估算，未实测：每条 beam 私有一个 16 token 块</text>
+    <line x1="20" y1="574" x2="900" y2="574" stroke="#E3E8EE"/>
+
+    <text x="36" y="598" fill="#3A4757">B. vLLM-GR（共享 prompt + 稠密后缀池）</text>
+    <text x="380" y="598" fill="#1F7A4D" font-weight="700">154 MiB</text>
+    <text x="560" y="598" fill="#5A6B7B">后缀为实测张量（池 336 MiB ÷ 8 slot）；prompt 按每 token 实测字节数计算</text>
+  </g>
+
+  <!-- ============ preallocation box ============ -->
+  <rect x="20" y="628" width="880" height="118" rx="10" fill="#F5F7FA" stroke="#9AA7B6" stroke-dasharray="5,4"/>
+  <text x="40" y="654" font-size="13.5" font-weight="700" fill="#3A4757">启动时一次性预分配（按 max_batch=8 计，L20 实测）</text>
+  <g font-size="12.5" fill="#3A4757">
+    <text x="40" y="682">后缀池 BeamAttentionPool</text><text x="290" y="682" font-weight="700">336 MiB</text>
+    <text x="40" y="704">父重排 scratch</text><text x="290" y="704" font-weight="700">42 MiB</text>
+    <text x="40" y="726">后缀拷贝缓冲 + 决策状态 + 后处理工作区</text><text x="290" y="726" font-weight="700">16.4 MiB</text>
+
+    <text x="470" y="682">GR 新增合计</text><text x="700" y="682" font-weight="700" fill="#1F7A4D">≈ 394 MiB</text>
+    <text x="470" y="704">vLLM 分页 KV 池（153,776 token）</text><text x="700" y="704" font-weight="700">16,819 MiB</text>
+    <text x="470" y="726">GR 新增 / 分页 KV 池</text><text x="700" y="726" font-weight="700">2.3%</text>
+  </g>
+
+  <text x="20" y="774" font-size="11.5" fill="#5A6B7B">每 token KV = 2(K/V) × 28 层 × 8 KV head × 128 dim × 2 B（bf16）= 114,688 B，与实测一致。示意图不按比例绘制。</text>
+  <text x="20" y="794" font-size="11.5" fill="#5A6B7B">实测环境：L20，gpu_memory_utilization=0.5，vllm 0.22.1，vllm-gr 33a1fdb（decode_graph 分支）。首个请求前后 GR 张量大小不变，均为启动时预分配。</text>
+</svg>

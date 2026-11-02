@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="800" viewBox="0 0 940 800" font-family="'Noto Sans CJK SC','Noto Sans SC','Source Han Sans SC','PingFang SC','Microsoft YaHei',sans-serif" role="img">
+  <title>后缀池的生命周期与父索引重排</title>
+  <defs>
+    <marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B7C8F"/>
+    </marker>
+    <marker id="arR" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#C0392B"/>
+    </marker>
+    <marker id="arG" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1F7A4D"/>
+    </marker>
+  </defs>
+  <rect width="940" height="800" fill="#ffffff"/>
+
+  <text x="20" y="40" font-size="22" font-weight="700" fill="#1F2D3D">后缀池的生命周期与父索引重排</text>
+  <text x="20" y="68" font-size="12.5" fill="#5A6B7B">一个 slot 只服务一次搜索；每个 Decode 步写入一列，选择之后按父索引重排各行，使第 i 行始终是第 i 条存活 beam 的历史。</text>
+
+  <!-- ===== A. lifecycle ===== -->
+  <text x="20" y="104" font-size="15" font-weight="700" fill="#3A4757">A. 一次搜索中的 slot 生命周期（以 N=3 为例）</text>
+
+  <g font-size="12">
+    <rect x="20" y="118" width="150" height="74" rx="8" fill="#E8F1FB" stroke="#6B9BD1"/>
+    <text x="95" y="142" font-weight="700" fill="#1F4E86" text-anchor="middle">Prefill</text>
+    <text x="95" y="162" fill="#3A4757" text-anchor="middle">prompt 写入分页池</text>
+    <text x="95" y="180" fill="#3A4757" text-anchor="middle">从 free-list 取 slot</text>
+
+    <line x1="170" y1="155" x2="190" y2="155" stroke="#6B7C8F" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="192" y="118" width="230" height="74" rx="8" fill="#FFF8F1" stroke="#E0A060"/>
+    <text x="307" y="142" font-weight="700" fill="#B0702C" text-anchor="middle">Decode #1</text>
+    <text x="307" y="162" fill="#3A4757" text-anchor="middle">写第 1 列 → 两级 attention</text>
+    <text x="307" y="180" fill="#3A4757" text-anchor="middle">→ 选择 → 重排</text>
+
+    <line x1="422" y1="155" x2="442" y2="155" stroke="#6B7C8F" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="444" y="118" width="230" height="74" rx="8" fill="#FFF8F1" stroke="#E0A060"/>
+    <text x="559" y="142" font-weight="700" fill="#B0702C" text-anchor="middle">Decode #2（最后一步）</text>
+    <text x="559" y="162" fill="#3A4757" text-anchor="middle">写第 2 列 → 两级 attention</text>
+    <text x="559" y="180" fill="#3A4757" text-anchor="middle">→ 选择（跳过重排）</text>
+
+    <line x1="674" y1="155" x2="694" y2="155" stroke="#6B7C8F" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="696" y="118" width="224" height="74" rx="8" fill="#F8D7DE" stroke="#D98A9A"/>
+    <text x="808" y="142" font-weight="700" fill="#A3203A" text-anchor="middle">终态</text>
+    <text x="808" y="162" fill="#3A4757" text-anchor="middle">设备端打包，单次 D2H</text>
+    <text x="808" y="180" fill="#3A4757" text-anchor="middle">slot 归还 free-list</text>
+  </g>
+
+  <g font-size="11.5" fill="#5A6B7B">
+    <text x="20" y="216">• 归还时不清零：写入是对指定位置的精确覆盖，attention 只读到当前步，新会话从第 0 步重新写起，旧数据不会被读到。</text>
+    <text x="20" y="236">• 最后一步之后没有下一次读取，因此不做重排。</text>
+  </g>
+
+  <!-- ===== B. reorder ===== -->
+  <text x="20" y="278" font-size="15" font-weight="700" fill="#3A4757">B. 父索引重排：为什么需要一块 scratch</text>
+  <text x="20" y="300" font-size="12" fill="#5A6B7B">示例 W=4。选择结果的父索引为 parent = [1, 1, 0, 3]：新 beam 0、1 都来自旧 beam 1，新 beam 2 来自旧 beam 0，旧 beam 2 被淘汰。</text>
+
+  <!-- before -->
+  <text x="40" y="336" font-size="12.5" font-weight="700" fill="#3A4757">重排前（池）</text>
+  <g font-size="12" text-anchor="middle">
+    <text x="30" y="368" text-anchor="start" fill="#5A6B7B">0</text>
+    <rect x="48" y="352" width="120" height="24" rx="3" fill="#D6E9F8" stroke="#6B9BD1"/><text x="108" y="369" fill="#1F4E86">历史 A</text>
+    <text x="30" y="400" text-anchor="start" fill="#5A6B7B">1</text>
+    <rect x="48" y="384" width="120" height="24" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="108" y="401" fill="#B0702C">历史 B</text>
+    <text x="30" y="432" text-anchor="start" fill="#5A6B7B">2</text>
+    <rect x="48" y="416" width="120" height="24" rx="3" fill="#EDEDED" stroke="#B5B5B5"/><text x="108" y="433" fill="#777">历史 C</text>
+    <text x="30" y="464" text-anchor="start" fill="#5A6B7B">3</text>
+    <rect x="48" y="448" width="120" height="24" rx="3" fill="#DDF0E3" stroke="#5FA97E"/><text x="108" y="465" fill="#1F7A4D">历史 D</text>
+  </g>
+
+  <!-- naive -->
+  <rect x="200" y="320" width="330" height="250" rx="10" fill="#FDF3F2" stroke="#E3A39B"/>
+  <text x="216" y="344" font-size="13" font-weight="700" fill="#C0392B">✗ 原地逐行拷贝：先写后读</text>
+  <g font-size="11.5" fill="#3A4757">
+    <text x="216" y="370">按行顺序执行 pool[i] ← pool[parent[i]]：</text>
+    <text x="216" y="394">i=0：pool[0] ← pool[1]，历史 A 被覆盖为 B</text>
+    <text x="216" y="416">i=1：pool[1] ← pool[1]，仍为 B</text>
+    <text x="216" y="438" fill="#C0392B" font-weight="700">i=2：pool[2] ← pool[0]，读到的已是 B</text>
+    <text x="216" y="460">i=3：pool[3] ← pool[3]，仍为 D</text>
+  </g>
+  <g font-size="11.5" text-anchor="middle">
+    <rect x="216" y="482" width="70" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="251" y="498" fill="#B0702C">B</text>
+    <rect x="292" y="482" width="70" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="327" y="498" fill="#B0702C">B</text>
+    <rect x="368" y="482" width="70" height="22" rx="3" fill="#FDE2C8" stroke="#C0392B" stroke-width="2"/><text x="403" y="498" fill="#C0392B" font-weight="700">B</text>
+    <rect x="444" y="482" width="70" height="22" rx="3" fill="#DDF0E3" stroke="#5FA97E"/><text x="479" y="498" fill="#1F7A4D">D</text>
+  </g>
+  <text x="216" y="530" font-size="11.5" fill="#C0392B">新 beam 2 应继承历史 A，实际得到 B。</text>
+  <text x="216" y="550" font-size="11.5" fill="#C0392B">父索引有重复、乱序时，结果依赖拷贝顺序。</text>
+
+  <!-- correct -->
+  <rect x="550" y="320" width="370" height="250" rx="10" fill="#F1F8F4" stroke="#8CC7A3"/>
+  <text x="566" y="344" font-size="13" font-weight="700" fill="#1F7A4D">✓ vLLM-GR（CUDA）：先全部读出，再全部写回</text>
+
+  <text x="566" y="372" font-size="11.5" fill="#3A4757">① gather：scratch[i] ← pool[parent[i]]</text>
+  <g font-size="11.5" text-anchor="middle">
+    <rect x="566" y="384" width="80" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="606" y="400" fill="#B0702C">B</text>
+    <rect x="652" y="384" width="80" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="692" y="400" fill="#B0702C">B</text>
+    <rect x="738" y="384" width="80" height="22" rx="3" fill="#D6E9F8" stroke="#6B9BD1"/><text x="778" y="400" fill="#1F4E86">A</text>
+    <rect x="824" y="384" width="80" height="22" rx="3" fill="#DDF0E3" stroke="#5FA97E"/><text x="864" y="400" fill="#1F7A4D">D</text>
+  </g>
+  <text x="566" y="424" font-size="11" fill="#5A6B7B">此时池未被修改，所有读取都看到旧值</text>
+
+  <line x1="735" y1="432" x2="735" y2="452" stroke="#1F7A4D" stroke-width="1.5" marker-end="url(#arG)"/>
+
+  <text x="566" y="472" font-size="11.5" fill="#3A4757">② scatter：pool[i] ← scratch[i]</text>
+  <g font-size="11.5" text-anchor="middle">
+    <rect x="566" y="484" width="80" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="606" y="500" fill="#B0702C">B</text>
+    <rect x="652" y="484" width="80" height="22" rx="3" fill="#FDE2C8" stroke="#E0A060"/><text x="692" y="500" fill="#B0702C">B</text>
+    <rect x="738" y="484" width="80" height="22" rx="3" fill="#D6E9F8" stroke="#1F7A4D" stroke-width="2"/><text x="778" y="500" fill="#1F4E86" font-weight="700">A</text>
+    <rect x="824" y="484" width="80" height="22" rx="3" fill="#DDF0E3" stroke="#5FA97E"/><text x="864" y="500" fill="#1F7A4D">D</text>
+  </g>
+  <text x="566" y="530" font-size="11.5" fill="#1F7A4D">结果与父索引的重复、顺序无关；按位拷贝，逐位一致。</text>
+  <text x="566" y="550" font-size="11.5" fill="#1F7A4D">两个 kernel 各一次 launch，覆盖全部 28 层。</text>
+
+  <!-- notes -->
+  <rect x="20" y="596" width="900" height="138" rx="10" fill="#F5F7FA" stroke="#9AA7B6" stroke-dasharray="5,4"/>
+  <text x="40" y="622" font-size="13.5" font-weight="700" fill="#3A4757">实现要点</text>
+  <g font-size="12" fill="#3A4757">
+    <text x="40" y="648">• 重排范围只到当前步，scratch 形状为 [L, W, H_kv, S, D]，每层一块切片，各层互不覆盖。OneRec-1.7B、W=128 时为 42 MiB。</text>
+    <text x="40" y="672">• 各层池的基地址在启动时写进一张固定的指针表，kernel 直接按地址寻址，无须每步重建索引张量。</text>
+    <text x="40" y="696">• NPU 调用 xllm-ops 的 select_unshared_kv 原地完成重排；xGR 论文用方向索引规避同类冲突。</text>
+    <text x="40" y="720">• 代价是一块常驻的 scratch 显存；换来的是实现简单、与父索引分布无关，并且整段可被 CUDA Graph 捕获。</text>
+  </g>
+
+  <text x="20" y="764" font-size="11.5" fill="#5A6B7B">示意中每行代表一条 beam 在全部层、全部 KV head 上的后缀；"历史 A/B/C/D"为教学标记。</text>
+  <text x="20" y="784" font-size="11.5" fill="#5A6B7B">代码：vllm_gr/ops/cuda/beam_kv_reorder.py、vllm_gr/v1/beam/beam_search_session.py（decode_graph 分支 33a1fdb）。</text>
+</svg>
