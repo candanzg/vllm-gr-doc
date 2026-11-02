@@ -93,13 +93,13 @@ SilverTorch 的方向与本文主题高度相关：**推荐系统的瓶颈正在
 
 ![从用户历史到候选物品的两种路径](./assets/figures/vllm-gr/01-retrieval-to-sid.png)
 
-*图 1：向量检索与 SID 生成的概念对照。图中 SID 为教学标识，图形大小不表示成本。*
+图 1-1：向量检索与 SID 生成的概念对照。图中 SID 为教学标识，图形大小不表示成本。*
 
 三个特征叠加起来，就是一句概括：**长上下文 + 短解码 + 大 Beam**。这正是通用 LLM 推理框架最不适配的组合——它们优化的是"多用户请求、动态批处理、长解码、OpenAI 风格 API"。
 
 ![vLLM 复用职责与 GR 扩展职责](./assets/figures/vllm-gr/01-vllm-gr-boundary.png)
 
-*图 2：上层为复用的 vLLM 职责，下层为对应的 GR 扩展。这是逻辑职责图，不是固定部署进程图。*
+图 1-2：上层为复用的 vLLM 职责，下层为对应的 GR 扩展。这是逻辑职责图，不是固定部署进程图。*
 
 ### 1.5 现有推理路径的三个挑战
 
@@ -146,7 +146,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 ![一次推荐搜索的整图计算流（N=3）](./assets/figures/vllm-gr/02-compute-flow-n3.png)
 
-*图 2：三段 SID 的完整计算路径。粉色为前端提交与输出、蓝色为设备侧执行、黄色为选择与 KV 重排、绿色为回传。外层灰色虚线框是三个逻辑层次，不代表进程边界。*
+图 2-1：三段 SID 的完整计算路径。粉色为前端提交与输出、蓝色为设备侧执行、黄色为选择与 KV 重排、绿色为回传。外层灰色虚线框是三个逻辑层次，不代表进程边界。*
 
 需要强调三点：
 
@@ -158,7 +158,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 ![从提交到终态回收的请求时序](./assets/figures/vllm-gr/03-request-lifecycle.png)
 
-*图 3：同一会话中的 Prefill、两次 Decode 与终态回收。阶段回执是控制信息；正常最后阶段可以合并终态候选与释放证明。图中责任主体是逻辑角色，实际进程部署由 Executor 等配置决定。*
+图 2-2：同一会话中的 Prefill、两次 Decode 与终态回收。阶段回执是控制信息；正常最后阶段可以合并终态候选与释放证明。图中责任主体是逻辑角色，实际进程部署由 Executor 等配置决定。*
 
 这条链路相对上游 Beam 的关键变化，在于**调用边界**：
 
@@ -176,7 +176,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 ![vLLM-GR 运行时分层架构：上游复用、接入改造与新增机制](./assets/figures/vllm-gr/03-runtime-architecture.png)
 
-*图 4：从 EntryPoints、Engine 到 Model / Ops 的逻辑职责图。蓝色表示复用 vLLM，黄色表示在上游职责处接入，粉色表示 GR 新增机制。顶部 plugin 在启动时安装扩展；图中分组不代表独立进程，也不要求存在同名 Python 类。*
+图 2-3：从 EntryPoints、Engine 到 Model / Ops 的逻辑职责图。蓝色表示复用 vLLM，黄色表示在上游职责处接入，粉色表示 GR 新增机制。顶部 plugin 在启动时安装扩展；图中分组不代表独立进程，也不要求存在同名 Python 类。*
 
 #### 复用层（蓝色）
 
@@ -205,7 +205,7 @@ vLLM-GR 是一个基于 vLLM 的生成式推荐推理引擎，当前聚焦 OneRe
 
 ![共享 prompt 与私有 suffix 的 Attention](./assets/figures/vllm-gr/02-prefix-suffix-kv.png)
 
-*图 5：同一个 item 的多条查询读取一份分页 prompt 和各自的短 suffix，分别计算 Attention 后用 LSE 合并。箭头表示读取与计算依赖，区域大小不表示内存比例。*
+图 2-4：同一个 item 的多条查询读取一份分页 prompt 和各自的短 suffix，分别计算 Attention 后用 LSE 合并。箭头表示读取与计算依赖，区域大小不表示内存比例。*
 
 图中三类状态是分开放的：原生分页 KV 保存共享 prompt，设备 Beam 状态保存候选 token、分数与父关系，GR 私有 suffix KV 保存分叉后的历史。它们通过阶段 metadata、父重排和资源回收协议协作。
 
@@ -458,7 +458,7 @@ vLLM 的 APC 以 16 token 为一块做前缀共享。1024 token 的 prompt 正�
 
 后缀单独成池，主要出于三点考虑。其一是粒度：后缀只有几个 token，按 16 token 分块时块内大半闲置，按实际步数分配则没有块内碎片。其二是地址固定：池的地址在运行期间不变，CUDA Graph 捕获的指针在回放时始终有效，Decode 阶段因此可以整图回放（见 4.2）。其三是重排简单：每步按父索引重排后缀，只需在稠密张量上做一次 gather/scatter，不涉及分页块的分配和引用计数（见 5.3）。
 
-两级 KV 在 Decode attention 中汇合：prefix 和 suffix 各自算出局部输出与 log-sum-exp，再按 LSE 加权合并（见第 2 章图 5）。
+两级 KV 在 Decode attention 中汇合：prefix 和 suffix 各自算出局部输出与 log-sum-exp，再按 LSE 加权合并（见第 2 章图 2-4）。
 
 后缀池上的操作只有三类：写入本步 K/V、两级 attention、按父索引重排。GPU 和 NPU 共用同一份池布局 `[slot, beam, kv_head, step, head_dim]`，各自提供算子实现。在 CUDA 上，写入由 Triton kernel 完成，步号从设备端的标量缓冲读取，因此可以被图捕获；attention 的 prefix 部分使用 FlashAttention，后缀计算与 LSE 合并融合在一个 Triton kernel 中；重排采用全层 gather/scatter。在 NPU 上，则直接调用 xllm-ops 的 `cache_unshared_kv`、`x_attention` 和 `select_unshared_kv`。两个平台还共用一份 Torch 参考实现做数值对照。这样，上层的调度、决策和结果打包逻辑都不必区分底层平台。
 
@@ -564,7 +564,7 @@ vLLM-GR 围绕这一特点，在 vLLM 基础上构建了会话式 Beam Search �
 
 ![vLLM-GR 当前推理链路与关键机制](./assets/figures/vllm-gr/07-current-capabilities.png)
 
-*图 6：一次 SID 候选搜索的逻辑流程。Prefill 选出第一个有效 token，随后执行两次 Decode；图中箭头表示逻辑数据流，不代表端到端整图。*
+图 6-1：一次 SID 候选搜索的逻辑流程。Prefill 选出第一个有效 token，随后执行两次 Decode；图中箭头表示逻辑数据流，不代表端到端整图。*
 
 **搜索留在设备侧。** 系统将一次候选搜索作为完整会话提交，在 Worker 和设备侧维护候选 token、累计分数与父子关系，减少逐 Beam、逐步骤的前端编排。Constraint Table 在生成过程中筛选目录中的合法候选；合法性判断与模型评分分别处理，使候选既满足目录约束，也遵循明确的分数比较语义。
 
@@ -580,7 +580,7 @@ vLLM-GR 围绕这一特点，在 vLLM 基础上构建了会话式 Beam Search �
 
 ![vLLM-GR 未来探索方向](./assets/figures/vllm-gr/07-future-directions.png)
 
-*图 7：vLLM-GR 未来探索方向。各方向可以并行研究，具体优先级和时间安排以项目规划为准。*
+图 7-1：vLLM-GR 未来探索方向。各方向可以并行研究，具体优先级和时间安排以项目规划为准。*
 
 #### 面向更大模型的分布式推理
 
