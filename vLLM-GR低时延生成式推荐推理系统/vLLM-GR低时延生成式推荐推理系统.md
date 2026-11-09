@@ -9,11 +9,13 @@
 
 ## 1 背景与挑战
 
-推荐系统的核心任务没有变过：给定一个用户的交互历史，从巨大的物品库中选出少量候选。变化的是"怎么找"。
+> 本节开场修订：[Xinming Han（@Lechmere-1）](https://github.com/Lechmere-1)
 
-过去十余年，这件事主要由检索与排序两段流水线完成，其中召回环节长期由向量检索主导——把用户或查询编码成向量，在物品向量索引中寻找近邻。近几年兴起的生成式推荐换了一条路：把物品编码成若干段语义 ID（Semantic ID，SID），让模型根据用户上下文**逐段生成**候选物品的标识，再把标识映射回业务物品。这一方向可追溯到 *Recommender Systems with Generative Retrieval* 等工作，该文用 Semantic ID 表达物品并以自回归方式生成候选，见 [论文](https://arxiv.org/abs/2305.05065)。
+推荐系统需要解决一个基本问题：在给定用户交互历史与当前上下文的条件下，从海量物品中高效筛选出一批相关候选。不同方法的核心差异在于“如何找到”这些候选。
 
-本文只讨论这套范式中的**推理**环节：给定用户历史，生成一批候选 SID 及其分数。语义码构建、模型训练与业务排序各有职责，不在本文范围。
+传统推荐系统通常采用召回与排序相结合的多阶段流程，向量检索是其中一条重要的召回技术路线：将用户或查询与物品编码到同一向量空间，再通过近邻搜索寻找候选。基于语义 ID 的生成式召回则提供了另一种方式：将物品表示为由多个离散 token 组成的语义 ID（Semantic ID，SID），让模型根据用户上下文逐段生成候选物品的标识，再将这些标识映射回业务物品。发表于 NeurIPS 2023 的 [Recommender Systems with Generative Retrieval](https://arxiv.org/abs/2305.05065) 提出的 TIGER，是这一技术路线的代表性工作之一。
+
+本文聚焦该范式的推理环节：给定用户历史和相关上下文，生成一批候选 SID 及其分数。语义 ID 构建、模型训练以及后续业务排序不在本文讨论范围内。
 
 ### 1.1 推荐系统的三代演进
 
@@ -675,6 +677,10 @@ vLLM 的 APC 以 16 token 为一块做前缀共享。1024 token 的 prompt 正�
 
 后缀池上的操作只有三类：写入本步 K/V、两级 attention、按父索引重排。GPU 和 NPU 共用同一份池布局 `[slot, beam, kv_head, step, head_dim]`，各自提供算子实现。在 CUDA 上，写入由 Triton kernel 完成，步号从设备端的标量缓冲读取，因此可以被图捕获；attention 的 prefix 部分使用 FlashAttention，后缀计算与 LSE 合并融合在一个 Triton kernel 中；重排采用全层 gather/scatter。在 NPU 上，则直接调用 xllm-ops 的 `cache_unshared_kv`、`x_attention` 和 `select_unshared_kv`。两个平台还共用一份 Torch 参考实现做数值对照。这样，上层的调度、决策和结果打包逻辑都不必区分底层平台。
 
+> NPU 部分补充：[Xinming Han（@Lechmere-1）](https://github.com/Lechmere-1)
+
+在 NPU 上，共享前缀保存在原生 paged KV 缓存中，由多个 Beam 共同使用；每条 Beam 新生成的私有后缀则保存在独立的连续存储池中。符合条件的增量 Decode 通过融合算子完成两部分的 Attention 计算与归一化，减少中间结果回写和算子调用。读取共享前缀时，如果缓存布局不满足算子要求，NPU Attention 后端会将本轮需要的 KV 块拷贝到临时缓冲区，将 K、V 整理到不同的连续区域，并更新对应的 block table，避免转换整个缓存池。私有后缀则按照父 Beam 关系继承和重排，确保每条路径保留正确的历史：固定宽度路径在满足条件时使用融合算子完成写入与重排，动态宽度路径则在不同宽度对应的存储区之间迁移历史。
+
 ### 5.3 后缀池的生命周期与父索引重排
 
 ![后缀池的生命周期与父索引重排][gr05-reorder]
@@ -745,9 +751,11 @@ scratch = 2(K/V) × L × W × H_kv × S × head_dim × dtype 字节
 
 ### 5.6 当前边界
 
+> 本节外部缓存说明修订：[Xinming Han（@Lechmere-1）](https://github.com/Lechmere-1)
+
 这套缓存设计目前还有以下几处边界：
 
-- 多级缓存只覆盖普通生成路径。持久 Beam 路径在启动时会拒绝 `kv_transfer_config`，因此 LMCache 的 CPU 内存缓存与跨实例 P2P 共享，目前只能用于普通 `generate()` 直通路径。让 Beam 路径接入外部 KV 存储，属于后续工作。
+- 原有 [LMCache 实验适配已移除](https://github.com/JiusiServe/vllm-gr/blob/2ffa8bd4e2c37a3f41734d0552e8fe5e10afff8a/docs/runtime_patch_inventory.md#L463)。未启用持久 Beam 的普通生成路径可按上游支持范围配置 Mooncake，其中 [MooncakeConnector](https://github.com/vllm-project/vllm/blob/v0.30.0/docs/features/mooncake_connector_usage.md) 用于 Prefill/Decode 间的 KV 传输，[MooncakeStoreConnector](https://github.com/vllm-project/vllm/blob/v0.30.0/docs/features/mooncake_store_connector_usage.md) 用于外部共享缓存与 CPU／磁盘卸载。持久 Beam 路径目前仍不支持外部 KV transfer，具体平台兼容性需结合部署版本验证。
 - 前缀复用以块为粒度。命中时至少要重算最后一块，不同 prompt 也只有在块边界之前完全一致时才能共享。
 - 预分配不随负载伸缩。后缀池与 scratch 的大小在启动时由 `max_batch`、W 和 S 确定，没有请求时同样占用显存。
 - 同一 batch 中的重复 prompt 需要额外处理。示例程序会为它们加上 `cache_salt`，避免在原子 Prefill 完成之前共享同一个 prompt 块。
