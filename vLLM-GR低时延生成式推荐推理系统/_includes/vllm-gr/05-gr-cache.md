@@ -58,7 +58,11 @@ vLLM-GR 在 CUDA 上把重排拆成两段：先 gather，按父索引把各行�
 
 *图 5-4：上半部分是 Prefill 实际计算的 token，下半部分是 100 对样本的端到端延迟全样本。*
 
-第一级 KV 沿用上游 APC。同一个 prompt 再次提交时，已缓存的块直接从分页池读取，Prefill 只计算未命中的部分。命中时实际调度的 token 数为 `((L − 1) mod 16) + 1`：最后一块即使已经缓存也要重算，因为首个 SID token 的 logits 要由它产生。输入长度为 1024 时，Prefill 只需计算 16 个 token。
+第一级 KV 沿用上游 APC。启用 APC 后，同一个 prompt 再次提交时，已缓存的块直接从分页池读取，Prefill 只计算未命中的部分。在可复用的完整前缀块均命中的情况下，实际调度的 token 数为 `((L − 1) mod block_size) + 1`，其中 L 为经过输入处理、包含额外标记的有效 prompt token 数；末尾仍需执行模型前向，以获得首个 SID token 的 logits。若仅部分前缀命中，剩余计算量还取决于实际命中长度。
+
+> 本段补充：[Xinming Han（@Lechmere-1）](https://github.com/Lechmere-1)
+
+在本文讨论的稠密 Attention 路径中，未显式指定 `block_size` 时，GPU 默认每块 16 个 token，NPU 默认每块 128 个 token。本节 L20 实验采用 GPU 的 16-token 块配置，因此输入长度为 1024 时，缓存命中后的 Prefill 需计算 16 个 token；若采用 NPU 的默认 128-token 块配置，相同长度的 prompt 在上述命中条件下需计算 128 个 token。具体块大小以引擎实际配置为准。
 
 图 5-4 的数据来自离线基准测试：每个样本先提交一次（cache-miss），紧接着再提交同一个 prompt（cache-hit），共 100 对。
 
