@@ -1,4 +1,4 @@
-# SGLang OneRec 210组全成图测试：GPU Memory Utilization = 0.95
+# SGLang 210组全成图测试
 
 
 ## 统计口径
