@@ -402,5 +402,3 @@ U 为不启用受限表，C 为启用受限生成。按模式、输入 token 数
 
 - U 模式 · [vllm-gr](gr-latency-168.csv) · [SID-GR](sid-gr.csv) · [SGLang](sglang.csv) · [vLLM](vllm.csv)
 - C 模式 · [vllm-gr](gr-latency-168-C.csv) · [SID-GR](sidgr-latency-168-C.csv)
-
-历史文件 `sid-gr.csv` 使用 Excel 工作簿格式。
