@@ -1,4 +1,4 @@
-input_tokens	beam_width	batch_size	KV_slots	p99_ms	p50_ms	avg_ms	min_ms	max_ms
+input_tokens,	beam_width,	batch_size,	KV_slots,	p99_ms,	p50_ms,	avg_ms,	min_ms,	max_ms
 256	32	1		32.932806	32.860686	32.853326	32.777475	32.937018
 256	32	2		38.51902	38.487419	38.478449	38.417127	38.52055
 256	32	4		50.240871	50.152612	50.1515	50.059801	50.243663
